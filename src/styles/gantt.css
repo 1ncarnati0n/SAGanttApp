@@ -1,12 +1,17 @@
+:root {
+  --task-a-color: #6366f1;
+  --task-a-progress: #c7d2fe;
+  --task-b-color: #ec4899;
+  --task-b-progress: #fbcfe8;
+}
+
 .gantt-wrapper {
-  border-radius: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.1),
-    0 1px 2px rgba(15, 23, 42, 0.05);
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  border: 1px solid black;
   overflow: hidden;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  height: clamp(24rem, calc(100vh - 12rem), 64rem);
+  box-shadow: 5px 5px 1px rgba(27, 27, 27, 0.842);
 }
 
 .gantt-wrapper .wx-grid-header {
@@ -25,4 +30,141 @@
 
 .gantt-wrapper .wx-gantt-scale {
   font-size: 0.75rem;
+}
+
+/* Baseline 스타일 - 구 프로젝트와 동일하게 */
+.wx-baseline {
+  position: absolute;
+  background-color: #292929;
+  border-radius: var(--wx-gantt-baseline-border-radius);
+  z-index: 1;
+}
+
+/* Willow 테마 커스터마이징 */
+.wx-willow-theme {
+  --wx-gantt-border: 1px solid #1d1e261a;
+  --wx-gantt-taskscale-border: var(--wx-gantt-border);
+
+  --wx-gantt-form-header-border: 1px solid green;
+  --wx-gantt-icon-color: #02006e;
+
+  /* bars */
+  --wx-gantt-bar-font:
+    var(--wx-font-weight)
+    var(--wx-font-size)
+    var(--wx-font-family);
+  --wx-gantt-bar-border-radius: 0px;
+  --wx-gantt-milestone-border-radius: 3px;
+
+  --wx-gantt-summary-color: #e7e7e7b4;
+  --wx-gantt-summary-font-color: #000000;
+  --wx-gantt-summary-fill-color: #8d8d8d8c;
+  --wx-gantt-summary-border-color: #000000;
+  --wx-gantt-summary-border: 1px solid #000000;
+
+  --wx-gantt-task-color: #539cfa;
+  --wx-gantt-task-font-color: #fff;
+  --wx-gantt-task-fill-color: #1f6bd9;
+  --wx-gantt-task-border-color: #1f6bd9;
+  --wx-gantt-task-border: 1px solid black;
+
+  --wx-gantt-project-color: #91ffe9;
+  --wx-gantt-project-font-color: #ffffff;
+  --wx-gantt-project-fill-color: #005a48;
+  --wx-gantt-project-border-color: #099f81;
+  --wx-gantt-project-border: 1px solid transparent;
+
+  --wx-gantt-milestone-color: #000000;
+
+  --wx-gantt-select-color: #eaedf5;
+  --wx-gantt-link-color: #3f3f3f;
+  --wx-gantt-link-marker-background: #eaedf5;
+  --wx-gantt-link-marker-color: #9fa1ae;
+
+  --wx-gantt-bar-shadow:
+    2px 2px 1px rgba(27, 27, 27, 0.70),
+    2px 2px 1px rgba(27, 27, 27, 0.70);
+
+  --wx-gantt-progress-marker-height: 26px;
+  --wx-gantt-progress-border-color: #181818;
+
+  --wx-gantt-baseline-border-radius: 4px;
+
+  /* table */
+  --wx-table-select-background: var(--wx-gantt-select-color);
+  --wx-table-select-focus-background: var(--wx-gantt-select-color);
+  --wx-table-select-border: none;
+  --wx-table-cell-border: var(--wx-grid-body-row-border);
+  --wx-table-header-background: var(--wx-background);
+  --wx-table-header-border: var(--wx-gantt-border);
+  --wx-table-header-cell-border: var(--wx-gantt-border);
+
+  --wx-checkbox-border-color: 1px solid red;
+
+  /* grid */
+  --wx-grid-header-font:
+    var(--wx-font-weight-md)
+    var(--wx-font-size)
+    var(--wx-font-family);
+  --wx-grid-header-font-color: var(--wx-color-font);
+  --wx-grid-header-text-transform: capitalize;
+  --wx-grid-header-shadow: none;
+
+  --wx-grid-body-font:
+    var(--wx-font-weight)
+    var(--wx-font-size)
+    var(--wx-font-family);
+  --wx-grid-body-font-color: var(--wx-color-font);
+  --wx-grid-body-row-border: var(--wx-gantt-border);
+  --wx-grid-body-cell-border: var(--wx-gantt-border);
+
+  /* timescale */
+  --wx-timescale-font:
+    var(--wx-font-weight-md)
+    var(--wx-font-size-sm)
+    var(--wx-font-family);
+  --wx-timescale-font-color: var(--wx-color-font);
+  --wx-timescale-text-transform: uppercase;
+  --wx-timescale-shadow: none;
+  --wx-timescale-border: var(--wx-gantt-taskscale-border);
+
+  /* grid and timescale */
+  --wx-gantt-holiday-background: #ffa5a5;
+  --wx-gantt-holiday-color: #9fa1ae;
+
+  /* markers */
+  --wx-gantt-marker-font: var(--wx-font-weight-md) var(--wx-font-size-sm)
+    var(--wx-font-family);
+  --wx-gantt-marker-font-color: #fff;
+  --wx-gantt-marker-color: rgba(6, 189, 248, 0.77);
+
+  /* tooltips */
+  --wx-tooltip-font: var(--wx-font-weight) var(--wx-font-size)
+    var(--wx-font-family);
+  --wx-tooltip-font-color: #e6e6e6;
+  --wx-tooltip-background: #4f525a;
+
+  /* sidebar */
+  --wx-sidebar-close-icon: #c0c3ce;
+}
+
+/* Custom task colors */
+.wx-gantt .wx-bar.wx-task.taskA {
+  background-color: var(--task-a-color);
+  border: 1px solid var(--task-a-color);
+  color: #ffffff;
+}
+
+.wx-gantt .wx-bar.wx-task.taskA .wx-progress-percent {
+  background-color: var(--task-a-progress);
+}
+
+.wx-gantt .wx-bar.wx-task.taskB {
+  background-color: var(--task-b-color);
+  border: 1px solid var(--task-b-color);
+  color: #ffffff;
+}
+
+.wx-gantt .wx-bar.wx-task.taskB .wx-progress-percent {
+  background-color: var(--task-b-progress);
 }

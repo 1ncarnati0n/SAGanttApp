@@ -82,27 +82,24 @@ export function GanttPreview() {
   };
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-1 flex-col gap-4">
       <header className="flex flex-col gap-1">
-        <h2 className="text-2xl font-semibold text-slate-900">공동주택 골조공사 표준공정</h2>
+        <h3 className="text-2xl font-semibold text-slate-900">공동주택 골조공사 표준공정</h3>
         <p className="text-sm text-slate-500">
-          보기 전환, 베이스라인 토글, 실시간 저장 등 React 19 + SVAR Gantt 2.3 기능을 확인하세요.
+          골조공사 표준공정
         </p>
       </header>
-
       <GanttControls
         viewType={viewType}
         onViewTypeChange={setViewType}
         showBaselines={showBaselines}
         onToggleBaselines={() => setShowBaselines((prev) => !prev)}
-        onSave={() => {
-          void handleSave();
-        }}
+        onSave={() => { void handleSave(); }}
         hasChanges={hasChanges}
         saveState={saveState}
       />
 
-      <div className="gantt-wrapper relative" role="group" aria-label="프로젝트 간트 차트">
+      <div className="gantt-wrapper relative flex-1" role="group" aria-label="프로젝트 간트 차트">
         {isLoading ? (
           <div className="flex h-full items-center justify-center bg-white/70 text-sm text-slate-600">
             데이터를 불러오는 중...

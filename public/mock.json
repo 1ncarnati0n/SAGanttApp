@@ -239,7 +239,8 @@
       "end": "2025-11-10",
       "duration": 4,
       "progress": 0,
-      "parent": "temp://1761292641814"
+      "parent": "temp://1761292641814",
+      "open": true
     },
     {
       "id": "temp://1761292641820",
