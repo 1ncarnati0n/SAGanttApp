@@ -1,0 +1,28 @@
+.gantt-wrapper {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.1),
+    0 1px 2px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  height: clamp(24rem, calc(100vh - 12rem), 64rem);
+}
+
+.gantt-wrapper .wx-grid-header {
+  font-size: 0.85rem;
+  text-transform: none;
+}
+
+.gantt-wrapper .wx-grid-row,
+.gantt-wrapper .wx-grid-cell {
+  font-size: 0.875rem;
+}
+
+.gantt-wrapper .wx-grid-row:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.gantt-wrapper .wx-gantt-scale {
+  font-size: 0.75rem;
+}
