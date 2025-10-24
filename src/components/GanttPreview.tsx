@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react";
-import { Editor, Gantt, defaultColumns, type IColumnConfig } from "@svar-ui/react-gantt";
+import {
+  Editor,
+  Gantt,
+  Toolbar,
+  ContextMenu,
+  defaultColumns,
+  defaultToolbarButtons,
+  type IColumnConfig
+} from "@svar-ui/react-gantt";
 import "@svar-ui/react-gantt/all.css";
 
 import "../styles/gantt.css";
@@ -81,14 +89,52 @@ export function GanttPreview() {
     setGanttApi(api);
   };
 
+  // Toolbar 버튼 설정 - 한글화
+  const toolbarItems = useMemo(() => {
+    return defaultToolbarButtons.map((button) => {
+      if (button.id === "add-task") {
+        return { ...button, text: "새 작업" };
+      }
+      if (button.id === "edit-task") {
+        return { ...button, menuText: "편집" };
+      }
+      if (button.id === "delete-task") {
+        return { ...button, menuText: "삭제" };
+      }
+      if (button.id === "move-task:up") {
+        return { ...button, menuText: "위로 이동" };
+      }
+      if (button.id === "move-task:down") {
+        return { ...button, menuText: "아래로 이동" };
+      }
+      if (button.id === "copy-task") {
+        return { ...button, menuText: "복사" };
+      }
+      if (button.id === "cut-task") {
+        return { ...button, menuText: "잘라내기" };
+      }
+      if (button.id === "paste-task") {
+        return { ...button, menuText: "붙여넣기" };
+      }
+      if (button.id === "indent-task:add") {
+        return { ...button, menuText: "들여쓰기" };
+      }
+      if (button.id === "indent-task:remove") {
+        return { ...button, menuText: "내어쓰기" };
+      }
+      return button;
+    });
+  }, []);
+
   return (
     <section className="flex flex-1 flex-col gap-4">
       <header className="flex flex-col gap-1">
         <h3 className="text-2xl font-semibold text-slate-900">공동주택 골조공사 표준공정</h3>
         <p className="text-sm text-slate-500">
-          골조공사 표준공정
+          Toolbar 및 ContextMenu를 사용하여 작업을 추가, 편집, 삭제할 수 있습니다.
         </p>
       </header>
+
       <GanttControls
         viewType={viewType}
         onViewTypeChange={setViewType}
@@ -99,6 +145,8 @@ export function GanttPreview() {
         saveState={saveState}
       />
 
+      {ganttApi && <Toolbar api={ganttApi} items={toolbarItems} />}
+
       <div className="gantt-wrapper relative flex-1" role="group" aria-label="프로젝트 간트 차트">
         {isLoading ? (
           <div className="flex h-full items-center justify-center bg-white/70 text-sm text-slate-600">
@@ -106,20 +154,21 @@ export function GanttPreview() {
           </div>
         ) : schedule ? (
           <>
-            <WillowTheme>
-              <Gantt
-                init={handleInit}
-                tasks={schedule.tasks}
-                links={schedule.links}
-                scales={scales}
-                columns={columns}
-                taskTypes={TASK_TYPES}
-                cellWidth={CELL_WIDTH_MAP[viewType]}
-                cellHeight={CELL_HEIGHT}
-                baselines={showBaselines}
-                {...handlers}
-              />
-            </WillowTheme>
+            <ContextMenu api={ganttApi}>
+              <WillowTheme>
+                <Gantt
+                  init={handleInit}
+                  tasks={schedule.tasks}
+                  links={schedule.links}
+                  scales={scales}
+                  columns={columns}
+                  taskTypes={TASK_TYPES}
+                  cellWidth={CELL_WIDTH_MAP[viewType]}
+                  cellHeight={CELL_HEIGHT}
+                  {...handlers}
+                />
+              </WillowTheme>
+            </ContextMenu>
             {ganttApi && <Editor api={ganttApi} items={editorItems} />}
           </>
         ) : (

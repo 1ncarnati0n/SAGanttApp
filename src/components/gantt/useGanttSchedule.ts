@@ -449,6 +449,11 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
 
   const initGantt = useCallback((api: any) => {
     apiRef.current = api;
+
+    // add-task 액션 발생 시 Editor를 자동으로 열기
+    api.on('add-task', ({ id }: { id: string | number }) => {
+      api.exec('show-editor', { id });
+    });
   }, []);
 
   useEffect(() => {
