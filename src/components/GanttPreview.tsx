@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import {
   Editor,
   Gantt,
@@ -17,6 +17,7 @@ import { editorItems } from "./gantt/editorItems";
 import { CELL_HEIGHT, CELL_WIDTH_MAP, TASK_TYPES } from "./gantt/taskConfig";
 import { useGanttSchedule } from "./gantt/useGanttSchedule";
 import type { ViewType } from "./gantt/types";
+import { isWeekend, isKoreanHoliday } from "../data/koreanHolidays";
 
 const START_COLUMN_WIDTH = 120;
 
@@ -126,6 +127,20 @@ export function GanttPreview() {
     });
   }, []);
 
+  // 주말 및 공휴일 하이라이트 함수
+  const highlightTime = useCallback((date: Date, unit: string) => {
+    // day 단위일 때만 주말/공휴일 표시
+    if (unit === "day") {
+      if (isKoreanHoliday(date)) {
+        return "wx-holiday"; // 공휴일 스타일
+      }
+      if (isWeekend(date)) {
+        return "wx-weekend"; // 주말 스타일
+      }
+    }
+    return "";
+  }, []);
+
   return (
     <section className="flex flex-1 flex-col gap-4">
       <header className="flex flex-col gap-1">
@@ -165,6 +180,7 @@ export function GanttPreview() {
                   taskTypes={TASK_TYPES}
                   cellWidth={CELL_WIDTH_MAP[viewType]}
                   cellHeight={CELL_HEIGHT}
+                  highlightTime={highlightTime}
                   {...handlers}
                 />
               </WillowTheme>

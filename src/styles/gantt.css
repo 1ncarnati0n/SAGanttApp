@@ -129,7 +129,7 @@
   --wx-timescale-border: var(--wx-gantt-taskscale-border);
 
   /* grid and timescale */
-  --wx-gantt-holiday-background: #ffa5a5;
+  --wx-gantt-holiday-background: #ffe0e0;
   --wx-gantt-holiday-color: #9fa1ae;
 
   /* markers */
@@ -232,4 +232,33 @@
 .wx-menu {
   border: 1px solid black;
   box-shadow: 3px 3px 1px rgba(27, 27, 27, 0.5);
+}
+
+/* 주말 및 공휴일 스타일 */
+/* 주말 (토요일, 일요일) */
+.wx-weekend {
+  background-color: #e8f4f8 !important;
+}
+
+/* 공휴일 */
+.wx-holiday {
+  background-color: #ffe0e0 !important;
+}
+
+/* Grid 영역의 주말/공휴일 스타일도 적용 */
+.wx-gantt .wx-grid .wx-weekend {
+  background-color: #e8f4f8 !important;
+}
+
+.wx-gantt .wx-grid .wx-holiday {
+  background-color: #ffe0e0 !important;
+}
+
+/* Chart 영역의 주말/공휴일 스타일 */
+.wx-gantt .wx-chart .wx-weekend {
+  background-color: #e8f4f8 !important;
+}
+
+.wx-gantt .wx-chart .wx-holiday {
+  background-color: #ffe0e0 !important;
 }

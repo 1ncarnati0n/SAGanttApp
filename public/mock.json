@@ -5,9 +5,9 @@
       "text": "골조공사 ",
       "type": "summary",
       "start": "2025-10-24",
-      "end": "2025-12-01",
-      "duration": 38,
-      "progress": 0,
+      "end": "2025-11-30",
+      "duration": 37,
+      "progress": 6,
       "parent": 0,
       "open": true
     },
@@ -18,7 +18,7 @@
       "start": "2025-10-24",
       "end": "2025-11-16",
       "duration": 23,
-      "progress": 0,
+      "progress": 10,
       "parent": "temp://1761288337819",
       "open": true
     },
@@ -29,7 +29,7 @@
       "start": "2025-10-24",
       "end": "2025-11-04",
       "duration": 11,
-      "progress": 0,
+      "progress": 20,
       "parent": "temp://1761288337820",
       "open": true
     },
@@ -40,7 +40,7 @@
       "start": "2025-10-24",
       "end": "2025-10-27",
       "duration": 3,
-      "progress": 0,
+      "progress": 60,
       "parent": "temp://1761288337821",
       "open": true
     },
@@ -82,11 +82,11 @@
       "text": "지하골조(벽체1단)",
       "type": "summary",
       "start": "2025-11-17",
-      "end": "2025-12-01",
-      "duration": 14,
+      "end": "2025-11-30",
+      "duration": 13,
       "progress": 0,
       "parent": "temp://1761288337819",
-      "open": false
+      "open": true
     },
     {
       "id": "temp://1761288759915",
@@ -229,7 +229,8 @@
       "end": "2025-11-05",
       "duration": 2,
       "progress": 0,
-      "parent": "temp://1761292641814"
+      "parent": "temp://1761292641814",
+      "open": true
     },
     {
       "id": "temp://1761292641819",
@@ -288,8 +289,8 @@
       "text": "양생",
       "type": "taskA",
       "start": "2025-11-27",
-      "end": "2025-12-01",
-      "duration": 4,
+      "end": "2025-11-30",
+      "duration": 3,
       "progress": 0,
       "parent": "temp://1761289036049"
     }
