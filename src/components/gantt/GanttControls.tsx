@@ -26,7 +26,7 @@ export function GanttControls({
   saveState,
 }: GanttControlsProps) {
   return (
-    <div className="mb-5 p-4 bg-gray-100 rounded">
+    <div className="p-2 bg-gray-100 rounded">
       {VIEW_OPTIONS.map((option) => (
         <button
           key={option.id}
@@ -55,7 +55,7 @@ export function GanttControls({
       >
         {saveState === "saving" ? "저장 중..." : "저장"}
       </button>
-      <span className="ml-4 text-sm text-gray-600" role="status">
+      <span className="ml-2 text-sm text-gray-600" role="status">
         {hasChanges && saveState === "idle" && "변경 사항이 있습니다."}
         {saveState === "saved" && "변경 내용이 mock.json에 저장되었습니다."}
         {saveState === "error" && "저장 실패 - 콘솔을 확인하세요."}
