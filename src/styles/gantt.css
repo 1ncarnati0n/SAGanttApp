@@ -171,12 +171,10 @@
 
 /* Toolbar 스타일 */
 .wx-toolbar {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   background-color: #f8fafc;
   border: 1px solid black;
-  border-bottom: 2px solid black;
   margin-bottom: 0.5rem;
-  box-shadow: 2px 2px 1px rgba(27, 27, 27, 0.3);
 }
 
 .wx-toolbar .wx-button {
@@ -237,7 +235,7 @@
 /* 주말 및 공휴일 스타일 */
 /* 주말 (토요일, 일요일) */
 .wx-weekend {
-  background-color: #e8f4f8 !important;
+  background-color: #f3f3f3 !important;
 }
 
 /* 공휴일 */
@@ -256,7 +254,7 @@
 
 /* Chart 영역의 주말/공휴일 스타일 */
 .wx-gantt .wx-chart .wx-weekend {
-  background-color: #e8f4f8 !important;
+  background-color: #f3f3f3 !important;
 }
 
 .wx-gantt .wx-chart .wx-holiday {

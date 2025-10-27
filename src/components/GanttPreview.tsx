@@ -144,7 +144,7 @@ export function GanttPreview() {
   return (
     <section className="flex flex-1 flex-col gap-4">
       <header className="flex flex-col gap-1">
-        <h3 className="text-2xl font-semibold text-slate-900">공동주택 골조공사 표준공정</h3>
+        <h2 className="text-2xl font-semibold text-slate-900">공동주택 골조공사 표준공정</h2>
         <p className="text-sm text-slate-500">
           Toolbar 및 ContextMenu를 사용하여 작업을 추가, 편집, 삭제할 수 있습니다.
         </p>
