@@ -21,10 +21,28 @@ interface UseGanttScheduleResult {
 }
 
 const TYPE_COLORS: Record<string, { bar: string; progress: string }> = {
-  taskA: { bar: "#6366f1", progress: "#c7d2fe" },
-  taskB: { bar: "#ec4899", progress: "#fbcfe8" },
+  urgent: { bar: "#f49a82", progress: "#f45e36" },
+  narrow: { bar: "#676a81", progress: "#1a2630" },
+  progress: { bar: "#00bcd4", progress: "#00bcd4" },
+  round: { bar: "#10b981", progress: "#6ee7b7" },
 };
 
+// 날짜 계산 상수 및 유틸리티
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * Date를 UTC 자정(00:00:00)으로 정규화
+ * @param date 정규화할 날짜
+ * @returns UTC 자정의 타임스탬프
+ */
+const toUtcMidnight = (date: Date): number =>
+  Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+
+/**
+ * 값을 ISO 날짜 문자열(YYYY-MM-DD)로 변환
+ * @param value 변환할 값 (string, Date 등)
+ * @returns ISO 날짜 문자열 또는 undefined
+ */
 const toIsoDate = (value: unknown): string | undefined => {
   if (!value) {
     return undefined;
@@ -42,6 +60,11 @@ const toIsoDate = (value: unknown): string | undefined => {
   return undefined;
 };
 
+/**
+ * 값을 유효한 숫자로 정규화
+ * @param value 변환할 값 (number, string 등)
+ * @returns 정규화된 숫자 또는 undefined
+ */
 const normalizeNumber = (value: unknown): number | undefined => {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -162,6 +185,11 @@ const serializeSchedule = (
   })),
 });
 
+/**
+ * 값을 유효한 Date 객체로 변환
+ * @param value 변환할 값 (string, number, Date 등)
+ * @returns Date 객체 또는 undefined
+ */
 const toDateOrUndefined = (value: unknown): Date | undefined => {
   if (!value) {
     return undefined;
@@ -171,25 +199,70 @@ const toDateOrUndefined = (value: unknown): Date | undefined => {
     return Number.isNaN(value.getTime()) ? undefined : value;
   }
 
-  const next = new Date(value);
-  return Number.isNaN(next.getTime()) ? undefined : next;
+  // string 또는 number 타입인지 확인
+  if (typeof value === 'string' || typeof value === 'number') {
+    const next = new Date(value);
+    return Number.isNaN(next.getTime()) ? undefined : next;
+  }
+
+  return undefined;
 };
 
+/**
+ * Task 객체를 Gantt 렌더링에 필요한 형태로 가공
+ * - 날짜 정규화 (Date 객체로 변환)
+ * - Duration 계산 (start/end 기반)
+ * - 마일스톤 특수 처리 (duration=0, end=start)
+ * - 타입별 색상 적용
+ *
+ * @param task 원본 task 객체
+ * @returns 가공된 task 객체
+ */
 const decorateTask = (task: Record<string, unknown>): Record<string, unknown> => {
   const decorated: Record<string, unknown> = { ...task };
 
+  // 날짜 필드 정규화
   const start = toDateOrUndefined(decorated.start);
-  if (start) decorated.start = start;
-
   const end = toDateOrUndefined(decorated.end);
-  if (end) decorated.end = end;
+  const durationValue = normalizeNumber(decorated.duration);
 
+  if (start) {
+    decorated.start = start;
+  }
+  if (end) {
+    decorated.end = end;
+  }
+
+  // Baseline 날짜 정규화
   const baseStart = toDateOrUndefined(decorated.base_start);
   if (baseStart) decorated.base_start = baseStart;
 
   const baseEnd = toDateOrUndefined(decorated.base_end);
   if (baseEnd) decorated.base_end = baseEnd;
 
+  // Duration이 있고 end가 없으면 end 계산
+  if (start && !end && typeof durationValue === "number" && durationValue >= 0) {
+    decorated.end = new Date(start.getTime() + durationValue * MS_PER_DAY);
+  }
+
+  // Start와 end가 있으면 duration 재계산
+  const normalizedEnd = toDateOrUndefined(decorated.end);
+  if (start && normalizedEnd) {
+    // Duration 계산: end - start (일수 차이)
+    // 예: start=10월1일, end=10월2일 -> duration=1 (1일간 작업)
+    const diffDays = Math.round((toUtcMidnight(normalizedEnd) - toUtcMidnight(start)) / MS_PER_DAY);
+    decorated.duration = diffDays >= 0 ? diffDays : 0;
+  } else if (typeof durationValue === "number") {
+    decorated.duration = durationValue;
+  }
+
+  // 마일스톤 특수 처리: duration=0, end=start
+  if (decorated.type === "milestone" && start) {
+    decorated.end = new Date(start);
+    decorated.duration = 0;
+  }
+
+  // 타입별 커스텀 색상 적용
   const typeKey = typeof decorated.type === "string" ? decorated.type : "";
   const palette = TYPE_COLORS[typeKey];
   if (palette) {

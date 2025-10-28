@@ -1,8 +1,11 @@
 :root {
-  --task-a-color: #6366f1;
-  --task-a-progress: #c7d2fe;
-  --task-b-color: #ec4899;
-  --task-b-progress: #fbcfe8;
+  --task-urgent-bg: #f49a82;
+  --task-urgent-progress: #f45e36;
+  --task-narrow-bg: #676a81;
+  --task-narrow-progress: #1a2630;
+  --task-progress-border: #00bcd4;
+  --task-round-bg: #10b981;
+  --task-round-progress: #6ee7b7;
 }
 
 .gantt-wrapper {
@@ -74,7 +77,7 @@
   --wx-gantt-project-border-color: #099f81;
   --wx-gantt-project-border: 1px solid transparent;
 
-  --wx-gantt-milestone-color: #000000;
+  --wx-gantt-milestone-color: #ad44ab;
 
   --wx-gantt-select-color: #eaedf5;
   --wx-gantt-link-color: #3f3f3f;
@@ -149,24 +152,73 @@
 }
 
 /* Custom task colors */
-.wx-gantt .wx-bar.wx-task.taskA {
-  background-color: var(--task-a-color);
-  border: 1px solid var(--task-a-color);
+.wx-gantt .wx-bar.wx-task.urgent {
+  background-color: var(--task-urgent-bg);
+  border: 1px solid var(--task-urgent-progress);
   color: #ffffff;
 }
 
-.wx-gantt .wx-bar.wx-task.taskA .wx-progress-percent {
-  background-color: var(--task-a-progress);
+.wx-gantt .wx-bar.wx-task.urgent .wx-progress-percent {
+  background-color: var(--task-urgent-progress);
 }
 
-.wx-gantt .wx-bar.wx-task.taskB {
-  background-color: var(--task-b-color);
-  border: 1px solid var(--task-b-color);
-  color: #ffffff;
+.wx-gantt .wx-bar.wx-task.narrow {
+  background-color: var(--task-narrow-bg);
+  border: 1px solid #63667a;
+  color: transparent;
+  height: 10px !important;
+  margin-top: 10px;
 }
-toolbar
-.wx-gantt .wx-bar.wx-task.taskB .wx-progress-percent {
-  background-color: var(--task-b-progress);
+
+.wx-gantt .wx-bar.wx-task.narrow .wx-progress-percent {
+  background-color: var(--task-narrow-progress);
+}
+
+.wx-gantt .wx-bar.wx-task.narrow .wx-link {
+  background-color: #384047;
+  border-radius: 0;
+}
+
+.wx-gantt .wx-bar.wx-task.narrow .wx-link .wx-inner {
+  border-radius: 0;
+}
+
+.wx-gantt .wx-bar.wx-task.progress {
+  background-color: transparent;
+  color: var(--wx-color-font);
+  border-radius: 50px;
+  border: 1px solid var(--task-progress-border);
+}
+
+.wx-gantt .wx-bar.wx-task.progress .wx-progress-wrapper {
+  border-radius: 50px;
+}
+
+.wx-gantt .wx-bar.wx-task.progress .wx-progress-percent {
+  background-color: var(--task-progress-border);
+}
+
+.wx-gantt .wx-bar.wx-task.round {
+  background-color: var(--task-round-bg);
+  border: 1px solid var(--task-round-bg);
+  color: #0f172a;
+  border-radius: 999px;
+}
+
+.wx-gantt .wx-bar.wx-task.round .wx-progress-percent {
+  background-color: var(--task-round-progress);
+}
+
+/* Milestone 스타일 - 마름모 형태 가시성 개선 */
+.wx-gantt .wx-bar.wx-milestone {
+  background-color: var(--wx-gantt-milestone-color);
+  border: 2px solid #8e2a8c;
+  box-shadow: 0 2px 8px rgba(173, 68, 171, 0.4);
+}
+
+.wx-gantt .wx-bar.wx-milestone .wx-bar-label {
+  color: #ffffff;
+  font-weight: 600;
 }
 
 /* Toolbar 스타일 */

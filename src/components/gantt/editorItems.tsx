@@ -1,7 +1,8 @@
 import { Combo, RadioButtonGroup } from "@svar-ui/react-core";
-import { defaultEditorItems, defaultTaskTypes, registerEditorItem } from "@svar-ui/react-gantt";
+import { defaultEditorItems, registerEditorItem } from "@svar-ui/react-gantt";
 
 import { users } from "../../data/users";
+import { TASK_TYPES } from "./taskConfig";
 
 const AssignedCombo = (props: any) => {
   const { value, options = [], onChange } = props;
@@ -35,7 +36,7 @@ if (typeIndex !== -1) {
       key: "type",
       comp: "radio",
       label: "Type",
-      options: defaultTaskTypes.map((type) => ({
+      options: TASK_TYPES.map((type) => ({
         ...type,
         value: type.id,
       })),
