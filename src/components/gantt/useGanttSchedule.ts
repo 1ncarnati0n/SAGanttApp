@@ -20,6 +20,8 @@ const TYPE_COLORS: Record<string, { bar: string; progress: string }> = {
 
 const SYNC_EVENT_TAG = Symbol("gantt-sync-listener");
 const UI_EVENT_TAG = Symbol("gantt-ui-handlers");
+const SUMMARY_EVENT_TAG = Symbol("gantt-summary-progress");
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const toIsoDate = (value: unknown): string | undefined => {
   if (value === null || value === undefined) {
@@ -71,7 +73,34 @@ const toDateOrUndefined = (value: unknown): Date | undefined => {
     return Number.isNaN(value.getTime()) ? undefined : value;
   }
 
-  if (typeof value === "string" || typeof value === "number") {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed.length) {
+      return undefined;
+    }
+
+    const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/;
+    const match = trimmed.match(dateOnly);
+    if (match) {
+      const [, yearStr, monthStr, dayStr] = match;
+      const year = Number(yearStr);
+      const month = Number(monthStr) - 1;
+      const day = Number(dayStr);
+      if (
+        Number.isInteger(year) &&
+        Number.isInteger(month) &&
+        Number.isInteger(day)
+      ) {
+        const candidate = new Date(year, month, day);
+        return Number.isNaN(candidate.getTime()) ? undefined : candidate;
+      }
+    }
+
+    const parsed = new Date(trimmed);
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  }
+
+  if (typeof value === "number") {
     const next = new Date(value);
     return Number.isNaN(next.getTime()) ? undefined : next;
   }
@@ -79,27 +108,51 @@ const toDateOrUndefined = (value: unknown): Date | undefined => {
   return undefined;
 };
 
+const calculateTaskDuration = (task: Record<string, unknown>): number => {
+  if (!task || typeof task !== "object") {
+    return 0;
+  }
+
+  if (typeof task.duration === "number" && Number.isFinite(task.duration) && task.duration > 0) {
+    return task.duration;
+  }
+
+  const start = toDateOrUndefined(task.start);
+  const end = toDateOrUndefined(task.end);
+
+  if (!start || !end) {
+    return 0;
+  }
+
+  const diff = (end.getTime() - start.getTime()) / MS_PER_DAY;
+  if (!Number.isFinite(diff) || diff <= 0) {
+    return 0;
+  }
+
+  return diff;
+};
+
 const decorateTask = (task: Record<string, unknown>): Record<string, unknown> => {
   const decorated: Record<string, unknown> = { ...task };
 
   const start = toDateOrUndefined(decorated.start);
-  const end = toDateOrUndefined(decorated.end);
-
   if (start) {
-    decorated.start = start;
+    decorated.start = new Date(start);
   }
+
+  const end = toDateOrUndefined(decorated.end);
   if (end) {
-    decorated.end = end;
+    decorated.end = new Date(end);
   }
 
   const baseStart = toDateOrUndefined(decorated.base_start);
   if (baseStart) {
-    decorated.base_start = baseStart;
+    decorated.base_start = new Date(baseStart);
   }
 
   const baseEnd = toDateOrUndefined(decorated.base_end);
   if (baseEnd) {
-    decorated.base_end = baseEnd;
+    decorated.base_end = new Date(baseEnd);
   }
 
   if (decorated.type === "milestone") {
@@ -192,6 +245,136 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
+  const getSummaryProgress = useCallback((summaryId: unknown): number => {
+    const api = apiRef.current;
+    if (!api) {
+      return 0;
+    }
+
+    const collect = (taskId: unknown): [number, number] => {
+      const task = api.getTask(taskId);
+      const children = task?.data;
+
+      if (!children || !children.length) {
+        return [0, 0];
+      }
+
+      let totalProgress = 0;
+      let totalDuration = 0;
+
+      children.forEach((child: any) => {
+        const childTask = api.getTask(child.id);
+        if (!childTask) {
+          return;
+        }
+
+        if (childTask.type !== "milestone" && childTask.type !== "summary") {
+          const duration = calculateTaskDuration(childTask);
+          if (duration > 0) {
+            const progressValue =
+              typeof childTask.progress === "number"
+                ? childTask.progress
+                : Number(childTask.progress ?? 0);
+            const boundedProgress = Number.isFinite(progressValue)
+              ? Math.max(0, Math.min(100, progressValue))
+              : 0;
+            totalDuration += duration;
+            totalProgress += duration * boundedProgress;
+          }
+        }
+
+        const [childProgress, childDuration] = collect(childTask.id);
+        totalProgress += childProgress;
+        totalDuration += childDuration;
+      });
+
+      return [totalProgress, totalDuration];
+    };
+
+    const [totalProgress, totalDuration] = collect(summaryId);
+    if (!totalDuration) {
+      return 0;
+    }
+
+    const average = totalProgress / totalDuration;
+    if (!Number.isFinite(average)) {
+      return 0;
+    }
+
+    const rounded = Math.round(average);
+    return Math.max(0, Math.min(100, rounded));
+  }, []);
+
+  const recalcSummaryProgress = useCallback(
+    (taskId: unknown, treatAsSummary = false) => {
+      const api = apiRef.current;
+      if (!api) {
+        return;
+      }
+
+      if (taskId === undefined || taskId === null) {
+        return;
+      }
+
+      const task = api.getTask(taskId);
+      if (!task || task.type === "milestone") {
+        return;
+      }
+
+      const state = api.getState?.();
+      const tasksStore: any = state?.tasks;
+
+      const summaryId =
+        treatAsSummary && task.type === "summary"
+          ? taskId
+          : tasksStore?.getSummaryId?.(taskId);
+
+      if (!summaryId) {
+        return;
+      }
+
+      const summaryTask = api.getTask(summaryId);
+      if (!summaryTask) {
+        return;
+      }
+
+      const nextProgress = getSummaryProgress(summaryId);
+      const currentProgress =
+        typeof summaryTask.progress === "number"
+          ? summaryTask.progress
+          : Number(summaryTask.progress ?? 0);
+
+      if (!Number.isFinite(nextProgress) || nextProgress === currentProgress) {
+        return;
+      }
+
+      api.exec("update-task", {
+        id: summaryId,
+        task: { progress: nextProgress },
+      });
+    },
+    [getSummaryProgress],
+  );
+
+  const recalcAllSummaryTasks = useCallback(() => {
+    const api = apiRef.current;
+    if (!api) {
+      return;
+    }
+
+    try {
+      const state = api.getState?.();
+      const tasksStore: any = state?.tasks;
+      tasksStore?.forEach?.((task: any) => {
+        if (task.type === "summary") {
+          recalcSummaryProgress(task.id, true);
+        }
+      });
+    } catch (error) {
+      console.warn("Failed to recalculate summary progress:", error);
+    }
+  }, [recalcSummaryProgress]);
+
   const markAsChanged = useCallback(() => {
     setHasChanges(true);
     setSaveState((prev) => (prev === "saved" ? "idle" : prev));
@@ -277,6 +460,42 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
 
       attachDataListeners(api);
 
+      api.detach(SUMMARY_EVENT_TAG);
+      const registerSummaryHandler = (action: string, handler: (payload: any) => void) => {
+        api.on(action, handler, { tag: SUMMARY_EVENT_TAG });
+      };
+
+      registerSummaryHandler("add-task", ({ id }: { id: unknown }) => {
+        recalcSummaryProgress(id);
+      });
+
+      registerSummaryHandler("update-task", (event: any) => {
+        if (event?.inProgress) {
+          return;
+        }
+        recalcSummaryProgress(event.id);
+      });
+
+      registerSummaryHandler("copy-task", ({ id }: { id: unknown }) => {
+        recalcSummaryProgress(id);
+      });
+
+      registerSummaryHandler("delete-task", ({ source }: { source: unknown }) => {
+        if (source !== undefined && source !== null) {
+          recalcSummaryProgress(source, true);
+        }
+      });
+
+      registerSummaryHandler("move-task", (event: any) => {
+        if (event?.inProgress) {
+          return;
+        }
+        recalcSummaryProgress(event.id);
+        if (event?.source !== undefined && event?.source !== null) {
+          recalcSummaryProgress(event.source, true);
+        }
+      });
+
       api.detach(UI_EVENT_TAG);
       api.on(
         "add-task",
@@ -286,9 +505,10 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
         { tag: UI_EVENT_TAG },
       );
 
+      recalcAllSummaryTasks();
       syncFromApi();
     },
-    [attachDataListeners, syncFromApi],
+    [attachDataListeners, recalcAllSummaryTasks, recalcSummaryProgress, syncFromApi],
   );
 
   const handleSave = useCallback(async () => {
@@ -403,6 +623,7 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
       if (api) {
         api.detach(SYNC_EVENT_TAG);
         api.detach(UI_EVENT_TAG);
+        api.detach(SUMMARY_EVENT_TAG);
       }
     };
   }, []);

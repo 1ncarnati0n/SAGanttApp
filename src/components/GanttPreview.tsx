@@ -52,6 +52,31 @@ const TIME_SCALE_CONFIGS: Record<ViewType, { scales: ScaleConfig[] }> = {
   },
 };
 
+const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+const formatDisplayEnd = (task: Record<string, any>): string => {
+  const exclusiveEnd =
+    task.end instanceof Date ? task.end : task.end ? new Date(task.end as string) : undefined;
+  if (!exclusiveEnd) {
+    return "";
+  }
+
+  const inclusive = new Date(exclusiveEnd);
+  inclusive.setDate(inclusive.getDate() - 1);
+
+  const start =
+    task.start instanceof Date ? task.start : task.start ? new Date(task.start as string) : undefined;
+  if (start && inclusive < start) {
+    return dateFormatter.format(start);
+  }
+
+  return dateFormatter.format(inclusive);
+};
+
 export function GanttPreview() {
   const [viewType, setViewType] = useState<ViewType>("day");
   const [showBaselines, setShowBaselines] = useState(false);
@@ -70,6 +95,16 @@ export function GanttPreview() {
           header: "시작",
           width: START_COLUMN_WIDTH,
           format: "yyyy-MM-dd",
+        };
+      }
+
+      if (column.id === "end") {
+        return {
+          ...column,
+          header: "종료",
+          width: START_COLUMN_WIDTH,
+          format: "yyyy-MM-dd",
+          template: (_: unknown, task: Record<string, any>) => formatDisplayEnd(task),
         };
       }
 

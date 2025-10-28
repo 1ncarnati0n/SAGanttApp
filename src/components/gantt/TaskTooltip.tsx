@@ -25,6 +25,15 @@ const TaskTooltip: FC<TaskTooltipProps> = ({ data }) => {
     typeof data.progress === "number" && Number.isFinite(data.progress)
       ? `${Math.round(data.progress)}%`
       : null;
+  const exclusiveEnd = data.end instanceof Date ? data.end : data.end ? new Date(data.end as string) : undefined;
+  const startDate = data.start instanceof Date ? data.start : data.start ? new Date(data.start as string) : undefined;
+  let inclusiveEnd: Date | undefined;
+  if (exclusiveEnd && !Number.isNaN(exclusiveEnd.getTime())) {
+    inclusiveEnd = new Date(exclusiveEnd.getTime() - 24 * 60 * 60 * 1000);
+    if (startDate && !Number.isNaN(startDate.getTime()) && inclusiveEnd < startDate) {
+      inclusiveEnd = new Date(startDate);
+    }
+  }
 
   return (
     <div className="wx-task-tooltip">
@@ -43,7 +52,7 @@ const TaskTooltip: FC<TaskTooltipProps> = ({ data }) => {
       {!isMilestone && (
         <div className="tooltip-row">
           <span className="tooltip-label">종료</span>
-          <span className="tooltip-value">{formatDate(data.end)}</span>
+          <span className="tooltip-value">{formatDate(inclusiveEnd)}</span>
         </div>
       )}
       {progress && (
