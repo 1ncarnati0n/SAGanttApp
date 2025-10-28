@@ -441,6 +441,7 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
         api.on(
           eventName,
           (event: any) => {
+            // Progress 드래그 중인 임시 업데이트 무시 (화면 흔들림 방지)
             if (event?.inProgress) {
               return;
             }

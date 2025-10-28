@@ -66,6 +66,8 @@
   border: 1px solid var(--gantt-border-color);
   overflow: hidden;
   box-shadow: var(--gantt-shadow);
+  /* Progress 드래그 시 화면 흔들림 방지 */
+  position: relative;
 }
 
 .gantt-wrapper .wx-grid-header {
@@ -439,6 +441,36 @@
 .wx-task-tooltip .tooltip-value {
   text-align: right;
   white-space: nowrap;
+}
+
+/* ========================================
+   Progress Marker (화면 흔들림 방지)
+======================================== */
+
+/* Progress 드래그 시 텍스트 선택 방지 */
+.wx-gantt .wx-progress-marker {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Progress 드래그 중 스타일 */
+.wx-gantt .wx-progress-marker.wx-progress-in-drag {
+  opacity: 1;
+  cursor: ew-resize;
+}
+
+/* Tooltip은 마우스 이벤트 방해하지 않도록 */
+.wx-gantt .wx-tooltip {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 차트 영역 드래그 시 텍스트 선택 방지 */
+.wx-gantt .wx-chart {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* ========================================

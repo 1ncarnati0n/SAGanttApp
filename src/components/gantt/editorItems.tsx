@@ -47,6 +47,11 @@ const createEditorItems = () => {
       const overrides = FIELD_OVERRIDES[item.key as string];
       const next: Record<string, any> = { ...item };
 
+      // 각 필드에 고유 id 할당 (중복 id 방지)
+      if (!next.id && item.key) {
+        next.id = `editor-field-${item.key}`;
+      }
+
       if (overrides?.label) {
         next.label = overrides.label;
       }
@@ -69,6 +74,7 @@ const createEditorItems = () => {
       1,
       {
         key: "type",
+        id: "task-type-field",
         comp: "radio",
         label: FIELD_OVERRIDES.type?.label ?? "작업 유형",
         options: TASK_TYPES.map(({ id, label }) => ({
@@ -82,6 +88,7 @@ const createEditorItems = () => {
       },
       {
         key: "assigned",
+        id: "task-assigned-field",
         comp: "assigned-combo",
         label: "담당자",
         options: users.map(({ id, label }) => ({
