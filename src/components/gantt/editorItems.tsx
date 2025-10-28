@@ -4,65 +4,99 @@ import { defaultEditorItems, registerEditorItem } from "@svar-ui/react-gantt";
 import { users } from "../../data/users";
 import { TASK_TYPES } from "./taskConfig";
 
-const AssignedCombo = (props: any) => {
-  const { value, options = [], onChange } = props;
+interface AssignedComboOption {
+  value: unknown;
+  label: string;
+}
 
-  return (
-    <Combo
-      options={options}
-      value={value}
-      onChange={onChange}
-      clear
-      placeholder="Assign to a person"
-    >
-      {({ option }: { option: { label?: string } }) => (
-        <span>{option?.label ?? ""}</span>
-      )}
-    </Combo>
-  );
+interface AssignedComboProps {
+  value: unknown;
+  options: AssignedComboOption[];
+  onChange: (payload: { value: unknown }) => void;
+}
+
+const FIELD_OVERRIDES: Record<string, { label?: string; placeholder?: string }> = {
+  text: { label: "작업명", placeholder: "작업 이름을 입력하세요" },
+  details: { label: "설명", placeholder: "세부 내용을 입력하세요" },
+  type: { label: "작업 유형" },
+  start: { label: "시작일" },
+  end: { label: "종료일" },
+  progress: { label: "진행율" },
+  links: { label: "연결 관계" },
 };
+
+const AssignedCombo = ({ value, options, onChange }: AssignedComboProps) => (
+  <Combo
+    clear
+    options={options}
+    value={value}
+    onChange={onChange}
+    placeholder="담당자를 선택하세요"
+  >
+    {({ option }: { option: AssignedComboOption }) => <span>{option?.label ?? ""}</span>}
+  </Combo>
+);
 
 registerEditorItem("radio", RadioButtonGroup);
 registerEditorItem("assigned-combo", AssignedCombo);
 
-const items: Array<Record<string, any>> = defaultEditorItems.map((item) => ({ ...item }));
+const createEditorItems = () => {
+  const baseItems = defaultEditorItems
+    .filter((item) => item.key !== "duration")
+    .map((item) => {
+      const overrides = FIELD_OVERRIDES[item.key as string];
+      const next: Record<string, any> = { ...item };
 
-const typeIndex = items.findIndex((item) => item.key === "type");
-if (typeIndex !== -1) {
-  items.splice(
-    typeIndex,
-    1,
-    {
-      key: "type",
-      comp: "radio",
-      label: "Type",
-      options: TASK_TYPES.map((type) => ({
-        ...type,
-        value: type.id,
-      })),
-      config: {
-        type: "inline",
+      if (overrides?.label) {
+        next.label = overrides.label;
+      }
+
+      if (overrides?.placeholder) {
+        next.config = {
+          ...(next.config ?? {}),
+          placeholder: overrides.placeholder,
+        };
+      }
+
+      return next;
+    });
+
+  const typeIndex = baseItems.findIndex((item) => item.key === "type");
+
+  if (typeIndex !== -1) {
+    baseItems.splice(
+      typeIndex,
+      1,
+      {
+        key: "type",
+        comp: "radio",
+        label: FIELD_OVERRIDES.type?.label ?? "작업 유형",
+        options: TASK_TYPES.map(({ id, label }) => ({
+          id,
+          label,
+          value: id,
+        })),
+        config: {
+          type: "inline",
+        },
       },
-    },
-    {
-      key: "assigned",
-      comp: "assigned-combo",
-      label: "Assigned",
-      options: users.map((user) => ({
-        ...user,
-        value: user.id,
-      })),
-    },
-  );
-}
-
-items.forEach((item) => {
-  if (item.comp === "date") {
-    item.config = {
-      ...(item.config ?? {}),
-      time: true,
-    };
+      {
+        key: "assigned",
+        comp: "assigned-combo",
+        label: "담당자",
+        options: users.map(({ id, label }) => ({
+          id,
+          label,
+          value: id,
+        })),
+        config: {
+          placeholder: "담당자를 선택하세요",
+        },
+      },
+    );
   }
-});
 
-export const editorItems = items;
+  return baseItems;
+};
+
+export const editorItems = createEditorItems();

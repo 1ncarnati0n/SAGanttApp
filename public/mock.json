@@ -5,8 +5,7 @@
       "text": "골조공사",
       "type": "summary",
       "start": "2025-10-24",
-      "end": "2025-11-17",
-      "duration": 24,
+      "end": "2025-11-18",
       "progress": 15,
       "parent": 0,
       "open": true
@@ -17,7 +16,6 @@
       "type": "summary",
       "start": "2025-10-24",
       "end": "2025-11-06",
-      "duration": 13,
       "progress": 25,
       "parent": "PRJ-1",
       "open": true
@@ -27,8 +25,7 @@
       "text": "철근 현장조립",
       "type": "urgent",
       "start": "2025-10-24",
-      "end": "2025-10-27",
-      "duration": 3,
+      "end": "2025-10-26",
       "progress": 60,
       "parent": "PRJ-1-1"
     },
@@ -37,8 +34,7 @@
       "text": "유로폼 설치",
       "type": "urgent",
       "start": "2025-10-28",
-      "end": "2025-11-02",
-      "duration": 5,
+      "end": "2025-10-30",
       "progress": 29,
       "parent": "PRJ-1-1"
     },
@@ -47,8 +43,7 @@
       "text": "강관동바리 설치",
       "type": "progress",
       "start": "2025-10-30",
-      "end": "2025-11-04",
-      "duration": 5,
+      "end": "2025-11-05",
       "progress": 16,
       "parent": "PRJ-1-1"
     },
@@ -57,8 +52,6 @@
       "text": "1단 지하골조 점검",
       "type": "milestone",
       "start": "2025-11-06",
-      "end": "2025-11-06",
-      "duration": 0,
       "progress": 0,
       "parent": "PRJ-1-1"
     },
@@ -67,8 +60,7 @@
       "text": "지하골조(벽체1단)",
       "type": "summary",
       "start": "2025-11-04",
-      "end": "2025-11-17",
-      "duration": 13,
+      "end": "2025-11-18",
       "progress": 5,
       "parent": "PRJ-1",
       "open": true
@@ -78,8 +70,7 @@
       "text": "철근 재조립",
       "type": "progress",
       "start": "2025-11-04",
-      "end": "2025-11-09",
-      "duration": 5,
+      "end": "2025-11-10",
       "progress": 0,
       "parent": "PRJ-1-2"
     },
@@ -88,8 +79,7 @@
       "text": "유로폼 재설치",
       "type": "round",
       "start": "2025-11-05",
-      "end": "2025-11-07",
-      "duration": 2,
+      "end": "2025-11-08",
       "progress": 0,
       "parent": "PRJ-1-2"
     },
@@ -98,8 +88,7 @@
       "text": "콘크리트 타설",
       "type": "task",
       "start": "2025-11-12",
-      "end": "2025-11-13",
-      "duration": 1,
+      "end": "2025-11-14",
       "progress": 0,
       "parent": "PRJ-1-2"
     },
@@ -108,8 +97,7 @@
       "text": "양생 관리",
       "type": "task",
       "start": "2025-11-14",
-      "end": "2025-11-17",
-      "duration": 3,
+      "end": "2025-11-18",
       "progress": 0,
       "parent": "PRJ-1-2"
     },
@@ -118,8 +106,6 @@
       "text": "1단 완료 점검",
       "type": "milestone",
       "start": "2025-11-17",
-      "end": "2025-11-17",
-      "duration": 0,
       "progress": 0,
       "parent": "PRJ-1-2"
     }

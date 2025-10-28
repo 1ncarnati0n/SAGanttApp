@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { SaveState, ScheduleData } from "./types";
 
@@ -8,15 +8,6 @@ interface UseGanttScheduleResult {
   saveState: SaveState;
   hasChanges: boolean;
   handleSave: () => Promise<void>;
-  handlers: {
-    onUpdateTask: (event: any) => void;
-    onAddTask: (event: any) => void;
-    onDeleteTask: (event: any) => void;
-    onMoveTask: (event: any) => void;
-    onAddLink: (event: any) => void;
-    onUpdateLink: (event: any) => void;
-    onDeleteLink: (event: any) => void;
-  };
   initGantt: (api: any) => void;
 }
 
@@ -27,29 +18,25 @@ const TYPE_COLORS: Record<string, { bar: string; progress: string }> = {
   round: { bar: "#10b981", progress: "#6ee7b7" },
 };
 
-// 날짜 계산 상수 및 유틸리티
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const SYNC_EVENT_TAG = Symbol("gantt-sync-listener");
+const UI_EVENT_TAG = Symbol("gantt-ui-handlers");
 
-/**
- * Date를 UTC 자정(00:00:00)으로 정규화
- * @param date 정규화할 날짜
- * @returns UTC 자정의 타임스탬프
- */
-const toUtcMidnight = (date: Date): number =>
-  Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-
-/**
- * 값을 ISO 날짜 문자열(YYYY-MM-DD)로 변환
- * @param value 변환할 값 (string, Date 등)
- * @returns ISO 날짜 문자열 또는 undefined
- */
 const toIsoDate = (value: unknown): string | undefined => {
-  if (!value) {
+  if (value === null || value === undefined) {
     return undefined;
   }
 
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const next = new Date(value);
+    return Number.isNaN(next.getTime()) ? undefined : next.toISOString().split("T")[0];
+  }
+
   if (typeof value === "string") {
-    const parsed = new Date(value);
+    const trimmed = value.trim();
+    if (!trimmed.length) {
+      return undefined;
+    }
+    const parsed = new Date(trimmed);
     return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString().split("T")[0];
   }
 
@@ -60,11 +47,6 @@ const toIsoDate = (value: unknown): string | undefined => {
   return undefined;
 };
 
-/**
- * 값을 유효한 숫자로 정규화
- * @param value 변환할 값 (number, string 등)
- * @returns 정규화된 숫자 또는 undefined
- */
 const normalizeNumber = (value: unknown): number | undefined => {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -80,46 +62,59 @@ const normalizeNumber = (value: unknown): number | undefined => {
   return undefined;
 };
 
-const idsAreEqual = (left: unknown, right: unknown): boolean => String(left) === String(right);
-
-const toPlainTask = (payload: any): Record<string, unknown> | null => {
-  if (!payload) {
-    return null;
+const toDateOrUndefined = (value: unknown): Date | undefined => {
+  if (!value && value !== 0) {
+    return undefined;
   }
 
-  if (payload.task && typeof payload.task === "object") {
-    const normalizedTask = { ...payload.task };
-    if (normalizedTask.id === undefined && payload.id !== undefined) {
-      normalizedTask.id = payload.id;
-    }
-    return normalizedTask;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? undefined : value;
   }
 
-  if (typeof payload === "object") {
-    return { ...payload };
+  if (typeof value === "string" || typeof value === "number") {
+    const next = new Date(value);
+    return Number.isNaN(next.getTime()) ? undefined : next;
   }
 
-  return null;
+  return undefined;
 };
 
-const toPlainLink = (payload: any): Record<string, unknown> | null => {
-  if (!payload) {
-    return null;
+const decorateTask = (task: Record<string, unknown>): Record<string, unknown> => {
+  const decorated: Record<string, unknown> = { ...task };
+
+  const start = toDateOrUndefined(decorated.start);
+  const end = toDateOrUndefined(decorated.end);
+
+  if (start) {
+    decorated.start = start;
+  }
+  if (end) {
+    decorated.end = end;
   }
 
-  if (payload.link && typeof payload.link === "object") {
-    const normalizedLink = { ...payload.link };
-    if (normalizedLink.id === undefined && payload.id !== undefined) {
-      normalizedLink.id = payload.id;
-    }
-    return normalizedLink;
+  const baseStart = toDateOrUndefined(decorated.base_start);
+  if (baseStart) {
+    decorated.base_start = baseStart;
   }
 
-  if (typeof payload === "object") {
-    return { ...payload };
+  const baseEnd = toDateOrUndefined(decorated.base_end);
+  if (baseEnd) {
+    decorated.base_end = baseEnd;
   }
 
-  return null;
+  if (decorated.type === "milestone") {
+    decorated.duration = 0;
+    delete decorated.end;
+  }
+
+  const typeKey = typeof decorated.type === "string" ? decorated.type : "";
+  const palette = TYPE_COLORS[typeKey];
+  if (palette) {
+    decorated.color = palette.bar;
+    decorated.progressColor = palette.progress;
+  }
+
+  return decorated;
 };
 
 const serializeTask = (taskInput: Record<string, unknown>): Record<string, unknown> => {
@@ -132,19 +127,20 @@ const serializeTask = (taskInput: Record<string, unknown>): Record<string, unkno
   const startDate = toIsoDate(taskInput.start);
   if (startDate) serialized.start = startDate;
 
-  const endDate = toIsoDate(taskInput.end);
-  if (endDate) serialized.end = endDate;
+  if (taskInput.type === "milestone") {
+    // 마일스톤은 start만 유지
+  } else {
+    const endDate = toIsoDate(taskInput.end);
+    if (endDate) {
+      serialized.end = endDate;
+    }
+  }
 
   const baseStart = toIsoDate(taskInput.base_start);
   if (baseStart) serialized.base_start = baseStart;
 
   const baseEnd = toIsoDate(taskInput.base_end);
   if (baseEnd) serialized.base_end = baseEnd;
-
-  const normalizedDuration = normalizeNumber(taskInput.duration);
-  if (typeof normalizedDuration !== "undefined") {
-    serialized.duration = normalizedDuration;
-  }
 
   const normalizedProgress = normalizeNumber(taskInput.progress);
   if (typeof normalizedProgress !== "undefined") {
@@ -185,98 +181,11 @@ const serializeSchedule = (
   })),
 });
 
-/**
- * 값을 유효한 Date 객체로 변환
- * @param value 변환할 값 (string, number, Date 등)
- * @returns Date 객체 또는 undefined
- */
-const toDateOrUndefined = (value: unknown): Date | undefined => {
-  if (!value) {
-    return undefined;
-  }
-
-  if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? undefined : value;
-  }
-
-  // string 또는 number 타입인지 확인
-  if (typeof value === 'string' || typeof value === 'number') {
-    const next = new Date(value);
-    return Number.isNaN(next.getTime()) ? undefined : next;
-  }
-
-  return undefined;
-};
-
-/**
- * Task 객체를 Gantt 렌더링에 필요한 형태로 가공
- * - 날짜 정규화 (Date 객체로 변환)
- * - Duration 계산 (start/end 기반)
- * - 마일스톤 특수 처리 (duration=0, end=start)
- * - 타입별 색상 적용
- *
- * @param task 원본 task 객체
- * @returns 가공된 task 객체
- */
-const decorateTask = (task: Record<string, unknown>): Record<string, unknown> => {
-  const decorated: Record<string, unknown> = { ...task };
-
-  // 날짜 필드 정규화
-  const start = toDateOrUndefined(decorated.start);
-  const end = toDateOrUndefined(decorated.end);
-  const durationValue = normalizeNumber(decorated.duration);
-
-  if (start) {
-    decorated.start = start;
-  }
-  if (end) {
-    decorated.end = end;
-  }
-
-  // Baseline 날짜 정규화
-  const baseStart = toDateOrUndefined(decorated.base_start);
-  if (baseStart) decorated.base_start = baseStart;
-
-  const baseEnd = toDateOrUndefined(decorated.base_end);
-  if (baseEnd) decorated.base_end = baseEnd;
-
-  // Duration이 있고 end가 없으면 end 계산
-  if (start && !end && typeof durationValue === "number" && durationValue >= 0) {
-    decorated.end = new Date(start.getTime() + durationValue * MS_PER_DAY);
-  }
-
-  // Start와 end가 있으면 duration 재계산
-  const normalizedEnd = toDateOrUndefined(decorated.end);
-  if (start && normalizedEnd) {
-    // Duration 계산: end - start (일수 차이)
-    // 예: start=10월1일, end=10월2일 -> duration=1 (1일간 작업)
-    const diffDays = Math.round((toUtcMidnight(normalizedEnd) - toUtcMidnight(start)) / MS_PER_DAY);
-    decorated.duration = diffDays >= 0 ? diffDays : 0;
-  } else if (typeof durationValue === "number") {
-    decorated.duration = durationValue;
-  }
-
-  // 마일스톤 특수 처리: duration=0, end=start
-  if (decorated.type === "milestone" && start) {
-    decorated.end = new Date(start);
-    decorated.duration = 0;
-  }
-
-  // 타입별 커스텀 색상 적용
-  const typeKey = typeof decorated.type === "string" ? decorated.type : "";
-  const palette = TYPE_COLORS[typeKey];
-  if (palette) {
-    decorated.color = palette.bar;
-    decorated.progressColor = palette.progress;
-  }
-
-  return decorated;
-};
-
 export const useGanttSchedule = (): UseGanttScheduleResult => {
-  const apiRef = useRef<any>(null);
+  const apiRef = useRef<any | null>(null);
   const currentTasksRef = useRef<Array<Record<string, unknown>>>([]);
   const currentLinksRef = useRef<Array<Record<string, unknown>>>([]);
+  const scalesRef = useRef<Array<Record<string, unknown>>>([]);
 
   const [schedule, setSchedule] = useState<ScheduleData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -288,66 +197,98 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
     setSaveState((prev) => (prev === "saved" ? "idle" : prev));
   }, []);
 
-  const updateScheduleState = useCallback(() => {
+  const syncFromApi = useCallback(() => {
+    const api = apiRef.current;
+    if (!api) {
+      return;
+    }
+
+    let rawTasks: Array<Record<string, unknown>> = [];
+    try {
+      rawTasks = typeof api.serialize === "function" ? api.serialize() ?? [] : [];
+    } catch (error) {
+      console.warn("Failed to serialize tasks from API:", error);
+    }
+
+    const decoratedTasks = rawTasks.map((task: any) => decorateTask(task));
+
+    let links = currentLinksRef.current;
+    try {
+      const stores = typeof api.getStores === "function" ? api.getStores() : null;
+      const dataStore = stores?.data;
+      const state = dataStore?.getState ? dataStore.getState() : null;
+      if (state?.links) {
+        links = state.links.map((link: any) => ({ ...link }));
+      }
+    } catch (error) {
+      console.warn("Failed to extract links from API:", error);
+    }
+
+    currentTasksRef.current = decoratedTasks;
+    currentLinksRef.current = links;
+
     setSchedule((prev) =>
       prev
         ? {
             ...prev,
-            tasks: currentTasksRef.current.map((task) => ({ ...task })),
-            links: currentLinksRef.current.map((link) => ({ ...link })),
+            tasks: decoratedTasks,
+            links,
           }
         : prev,
     );
   }, []);
 
-  const getTaskFromApi = useCallback((taskId: unknown): Record<string, unknown> | null => {
-    const api = apiRef.current;
-    if (!api || typeof api.getTask !== "function") {
-      return null;
-    }
+  const attachDataListeners = useCallback(
+    (api: any) => {
+      api.detach(SYNC_EVENT_TAG);
 
-    try {
-      const task = api.getTask(taskId);
-      return task ? { ...task } : null;
-    } catch (error) {
-      console.warn("Failed to fetch task from API:", error);
-      return null;
-    }
-  }, []);
+      const events = [
+        "add-task",
+        "update-task",
+        "delete-task",
+        "move-task",
+        "copy-task",
+        "indent-task",
+        "add-link",
+        "update-link",
+        "delete-link",
+      ];
 
-  const updateTaskInRef = useCallback(
-    (taskPayload: any) => {
-      const normalizedTask = toPlainTask(taskPayload);
-      const targetId =
-        normalizedTask?.id ??
-        taskPayload?.id ??
-        (typeof taskPayload === "string" || typeof taskPayload === "number" ? taskPayload : undefined);
-
-      if (targetId === undefined || targetId === null) {
-        console.warn("Cannot update task ref - missing id:", taskPayload);
-        return;
-      }
-
-      const index = currentTasksRef.current.findIndex((t) => idsAreEqual(t.id, targetId));
-      const source = normalizedTask ?? getTaskFromApi(targetId);
-
-      if (!source) {
-        console.warn("Cannot resolve task payload for update:", taskPayload);
-        return;
-      }
-
-      const decorated = decorateTask(source);
-
-      if (index === -1) {
-        currentTasksRef.current = [...currentTasksRef.current, decorated];
-        return;
-      }
-
-      const nextTasks = [...currentTasksRef.current];
-      nextTasks[index] = { ...nextTasks[index], ...decorated };
-      currentTasksRef.current = nextTasks;
+      events.forEach((eventName) => {
+        api.on(
+          eventName,
+          (event: any) => {
+            if (event?.inProgress) {
+              return;
+            }
+            syncFromApi();
+            markAsChanged();
+          },
+          { tag: SYNC_EVENT_TAG },
+        );
+      });
     },
-    [getTaskFromApi],
+    [markAsChanged, syncFromApi],
+  );
+
+  const initGantt = useCallback(
+    (api: any) => {
+      apiRef.current = api;
+
+      attachDataListeners(api);
+
+      api.detach(UI_EVENT_TAG);
+      api.on(
+        "add-task",
+        ({ id }: { id: string | number }) => {
+          api.exec("show-editor", { id });
+        },
+        { tag: UI_EVENT_TAG },
+      );
+
+      syncFromApi();
+    },
+    [attachDataListeners, syncFromApi],
   );
 
   const handleSave = useCallback(async () => {
@@ -356,17 +297,39 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
       return;
     }
 
+    const api = apiRef.current;
+    if (!api) {
+      console.error("Gantt API is not ready");
+      return;
+    }
+
     try {
       setSaveState("saving");
+      syncFromApi();
 
       const tasksToSave = currentTasksRef.current;
-      const linksToSave = currentLinksRef.current;
-
       if (tasksToSave.length === 0) {
         throw new Error("No tasks to save");
       }
 
-      const payload = serializeSchedule(tasksToSave, linksToSave, schedule?.scales || []);
+      let linksToSave = currentLinksRef.current;
+      try {
+        const stores = typeof api.getStores === "function" ? api.getStores() : null;
+        const dataStore = stores?.data;
+        const state = dataStore?.getState ? dataStore.getState() : null;
+        if (state?.links) {
+          linksToSave = state.links.map((link: any) => ({ ...link }));
+          currentLinksRef.current = linksToSave;
+        }
+      } catch (error) {
+        console.warn("Falling back to cached links while saving:", error);
+      }
+
+      const payload = serializeSchedule(
+        tasksToSave,
+        linksToSave,
+        schedule?.scales ?? scalesRef.current,
+      );
 
       const response = await fetch("/api/mock", {
         method: "POST",
@@ -390,173 +353,58 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
       setSaveState("error");
       alert("저장 중 오류가 발생했습니다: " + (error as Error).message);
     }
-  }, [schedule?.scales]);
-
-  const handleTaskUpdate = useCallback(
-    (event: any) => {
-      updateTaskInRef(event);
-      markAsChanged();
-      updateScheduleState();
-    },
-    [markAsChanged, updateScheduleState, updateTaskInRef],
-  );
-
-  const handleTaskAdd = useCallback(
-    (event: any) => {
-      updateTaskInRef(event);
-      markAsChanged();
-      updateScheduleState();
-    },
-    [markAsChanged, updateScheduleState, updateTaskInRef],
-  );
-
-  const handleTaskDelete = useCallback(
-    (event: any) => {
-      const targetId = event?.id ?? event?.task?.id;
-
-      if (targetId === undefined || targetId === null) {
-        console.warn("Cannot delete task without id:", event);
-        return;
-      }
-
-      currentTasksRef.current = currentTasksRef.current.filter((t) => !idsAreEqual(t.id, targetId));
-      markAsChanged();
-      updateScheduleState();
-    },
-    [markAsChanged, updateScheduleState],
-  );
-
-  const handleTaskMove = useCallback(
-    (event: any) => {
-      updateTaskInRef(event);
-      markAsChanged();
-      updateScheduleState();
-    },
-    [markAsChanged, updateScheduleState, updateTaskInRef],
-  );
-
-  const handleLinkAdd = useCallback(
-    (event: any) => {
-      const normalizedLink = toPlainLink(event);
-
-      if (!normalizedLink || normalizedLink.id === undefined || normalizedLink.id === null) {
-        console.warn("Cannot append link without id:", event);
-        return;
-      }
-
-      const existingIndex = currentLinksRef.current.findIndex((link) => idsAreEqual(link.id, normalizedLink.id));
-      if (existingIndex === -1) {
-        currentLinksRef.current = [...currentLinksRef.current, normalizedLink];
-      } else {
-        const nextLinks = [...currentLinksRef.current];
-        nextLinks[existingIndex] = {
-          ...nextLinks[existingIndex],
-          ...normalizedLink,
-        };
-        currentLinksRef.current = nextLinks;
-      }
-
-      markAsChanged();
-      updateScheduleState();
-    },
-    [markAsChanged, updateScheduleState],
-  );
-
-  const handleLinkUpdate = useCallback(
-    (event: any) => {
-      const normalizedLink = toPlainLink(event);
-      const targetId =
-        normalizedLink?.id ??
-        event?.id ??
-        (typeof event === "string" || typeof event === "number" ? event : undefined);
-
-      if (targetId === undefined || targetId === null) {
-        console.warn("Cannot update link without id:", event);
-        return;
-      }
-
-      const index = currentLinksRef.current.findIndex((l) => idsAreEqual(l.id, targetId));
-      if (index !== -1) {
-        if (!normalizedLink) {
-          console.warn("Cannot resolve link payload for update:", event);
-          return;
-        }
-        const nextLinks = [...currentLinksRef.current];
-        nextLinks[index] = { ...nextLinks[index], ...normalizedLink };
-        currentLinksRef.current = nextLinks;
-      }
-      markAsChanged();
-      updateScheduleState();
-    },
-    [markAsChanged, updateScheduleState],
-  );
-
-  const handleLinkDelete = useCallback(
-    (event: any) => {
-      const targetId = event?.id ?? event?.link?.id;
-
-      if (targetId === undefined || targetId === null) {
-        console.warn("Cannot delete link without id:", event);
-        return;
-      }
-
-      currentLinksRef.current = currentLinksRef.current.filter((l) => !idsAreEqual(l.id, targetId));
-      markAsChanged();
-      updateScheduleState();
-    },
-    [markAsChanged, updateScheduleState],
-  );
-
-  const handlers = useMemo(
-    () => ({
-      onUpdateTask: handleTaskUpdate,
-      onAddTask: handleTaskAdd,
-      onDeleteTask: handleTaskDelete,
-      onMoveTask: handleTaskMove,
-      onAddLink: handleLinkAdd,
-      onUpdateLink: handleLinkUpdate,
-      onDeleteLink: handleLinkDelete,
-    }),
-    [handleLinkAdd, handleLinkDelete, handleLinkUpdate, handleTaskAdd, handleTaskDelete, handleTaskMove, handleTaskUpdate],
-  );
-
-  const initGantt = useCallback((api: any) => {
-    apiRef.current = api;
-
-    // add-task 액션 발생 시 Editor를 자동으로 열기
-    api.on('add-task', ({ id }: { id: string | number }) => {
-      api.exec('show-editor', { id });
-    });
-  }, []);
+  }, [schedule?.scales, syncFromApi]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadData = async () => {
+      setIsLoading(true);
+
       try {
         const response = await fetch("/api/mock");
-
-        if (response.ok) {
-          const data = await response.json();
-
-          const processedTasks = (data.tasks || []).map((task: any) => decorateTask(task));
-
-          const nextSchedule: ScheduleData = {
-            tasks: processedTasks,
-            links: data.links || [],
-            scales: data.scales || [],
-          };
-
-          setSchedule(nextSchedule);
-          currentTasksRef.current = processedTasks;
-          currentLinksRef.current = data.links || [];
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.statusText}`);
         }
+
+        const data = await response.json();
+        if (!isMounted) {
+          return;
+        }
+
+        const tasks = (data.tasks ?? []).map((task: any) => decorateTask(task));
+        const links = (data.links ?? []).map((link: any) => ({ ...link }));
+        const scales = (data.scales ?? []).map((scale: any) => ({ ...scale }));
+
+        scalesRef.current = scales;
+        currentTasksRef.current = tasks;
+        currentLinksRef.current = links;
+
+        setSchedule({ tasks, links, scales });
+        setHasChanges(false);
+        setSaveState("idle");
       } catch (error) {
         console.error("Error loading data:", error);
+        if (isMounted) {
+          setSchedule(null);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    loadData();
+    void loadData();
+
+    return () => {
+      isMounted = false;
+      const api = apiRef.current;
+      if (api) {
+        api.detach(SYNC_EVENT_TAG);
+        api.detach(UI_EVENT_TAG);
+      }
+    };
   }, []);
 
   return {
@@ -565,7 +413,6 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
     saveState,
     hasChanges,
     handleSave,
-    handlers,
     initGantt,
   };
 };

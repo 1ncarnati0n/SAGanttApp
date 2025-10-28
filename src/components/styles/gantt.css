@@ -1,57 +1,113 @@
 :root {
+  /* ========== Custom Task Type Colors ========== */
   --task-urgent-bg: #f49a82;
   --task-urgent-progress: #f45e36;
+  --task-urgent-border: var(--task-urgent-progress);
+
   --task-narrow-bg: #676a81;
   --task-narrow-progress: #1a2630;
+  --task-narrow-border: #63667a;
+  --task-narrow-link-bg: #384047;
+
   --task-progress-border: #00bcd4;
+
   --task-round-bg: #10b981;
   --task-round-progress: #6ee7b7;
+  --task-round-text: #0f172a;
+
+  /* ========== Gantt Wrapper ========== */
+  --gantt-border-color: #000000;
+  --gantt-shadow: 5px 5px 1px rgba(27, 27, 27, 0.842);
+  --gantt-min-height: 600px;
+
+  /* ========== Grid & Scale ========== */
+  --grid-font-size: 0.8rem;
+  --grid-hover-bg: rgba(37, 99, 235, 0.08);
+  --scale-font-size: 0.75rem;
+
+  /* ========== Baseline ========== */
+  --baseline-bg: #292929;
+
+  /* ========== Toolbar ========== */
+  --toolbar-bg: #f8fafc;
+  --toolbar-border: rgba(15, 23, 42, 0.12);
+  --toolbar-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --toolbar-btn-bg: #ffffff;
+  --toolbar-btn-border: rgba(15, 23, 42, 0.16);
+  --toolbar-btn-hover: #e2e8f0;
+  --toolbar-btn-hover-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+  --toolbar-gap: 0.1rem;
+
+  /* ========== Editor Panel ========== */
+  --editor-bg: #ffffff;
+  --editor-border: #000000;
+  --editor-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+  --editor-header-bg: #f1f5f9;
+  --editor-header-border: rgba(15, 23, 42, 0.12);
+  --editor-footer-bg: #f8fafc;
+
+  /* ========== Weekend & Holiday ========== */
+  --weekend-bg: #f3f3f3;
+  --weekend-grid-bg: #e8f4f8;
+  --holiday-bg: #ffe0e0;
+
+  /* ========== Milestone ========== */
+  --milestone-color: #ad44ab;
+  --milestone-border: #8e2a8c;
+  --milestone-shadow: 0 2px 8px rgba(173, 68, 171, 0.4);
 }
+
+/* ========================================
+   Gantt Wrapper
+======================================== */
 
 .gantt-wrapper {
   width: 100%;
   height: 100%;
-  min-height: 600px;
-  border: 1px solid black;
+  min-height: var(--gantt-min-height);
+  border: 1px solid var(--gantt-border-color);
   overflow: hidden;
-  box-shadow: 5px 5px 1px rgba(27, 27, 27, 0.842);
+  box-shadow: var(--gantt-shadow);
 }
 
 .gantt-wrapper .wx-grid-header {
-  font-size: 0.8rem;
+  font-size: var(--grid-font-size);
   text-transform: none;
 }
 
 .gantt-wrapper .wx-grid-row,
 .gantt-wrapper .wx-grid-cell {
-  font-size: 0.8rem;
+  font-size: var(--grid-font-size);
 }
 
 .gantt-wrapper .wx-grid-row:hover {
-  background: rgba(37, 99, 235, 0.08);
+  background: var(--grid-hover-bg);
 }
 
 .gantt-wrapper .wx-gantt-scale {
-  font-size: 0.75rem;
+  font-size: var(--scale-font-size);
 }
 
-/* Baseline 스타일 - 구 프로젝트와 동일하게 */
+/* ========================================
+   Baseline
+======================================== */
+
 .wx-baseline {
   position: absolute;
-  background-color: #292929;
+  background-color: var(--baseline-bg);
   border-radius: var(--wx-gantt-baseline-border-radius);
   z-index: 1;
 }
 
-/* Willow 테마 커스터마이징 */
+/* ========================================
+   Willow Theme Customization
+======================================== */
+
 .wx-willow-theme {
   --wx-gantt-border: 1px solid #1d1e261a;
   --wx-gantt-taskscale-border: var(--wx-gantt-border);
 
-  --wx-gantt-form-header-border: 1px solid green;
-  --wx-gantt-icon-color: #02006e;
-
-  /* bars */
+  /* Bars */
   --wx-gantt-bar-font:
     var(--wx-font-weight)
     var(--wx-font-size)
@@ -59,41 +115,49 @@
   --wx-gantt-bar-border-radius: 0px;
   --wx-gantt-milestone-border-radius: 3px;
 
+  /* Bar Shadow */
+  --wx-gantt-bar-shadow:
+    2px 2px 1px rgba(27, 27, 27, 0.70),
+    2px 2px 1px rgba(27, 27, 27, 0.70);
+
+  /* Summary Task */
   --wx-gantt-summary-color: #e7e7e7b4;
   --wx-gantt-summary-font-color: #000000;
   --wx-gantt-summary-fill-color: #8d8d8d8c;
   --wx-gantt-summary-border-color: #000000;
   --wx-gantt-summary-border: 1px solid #000000;
 
+  /* Default Task */
   --wx-gantt-task-color: #539cfa;
   --wx-gantt-task-font-color: #fff;
   --wx-gantt-task-fill-color: #1f6bd9;
   --wx-gantt-task-border-color: #1f6bd9;
   --wx-gantt-task-border: 1px solid black;
 
+  /* Project Task */
   --wx-gantt-project-color: #91ffe9;
   --wx-gantt-project-font-color: #ffffff;
   --wx-gantt-project-fill-color: #005a48;
   --wx-gantt-project-border-color: #099f81;
   --wx-gantt-project-border: 1px solid transparent;
 
-  --wx-gantt-milestone-color: #ad44ab;
+  /* Milestone */
+  --wx-gantt-milestone-color: var(--milestone-color);
 
+  /* Selection & Links */
   --wx-gantt-select-color: #eaedf5;
   --wx-gantt-link-color: #3f3f3f;
   --wx-gantt-link-marker-background: #eaedf5;
   --wx-gantt-link-marker-color: #9fa1ae;
 
-  --wx-gantt-bar-shadow:
-    2px 2px 1px rgba(27, 27, 27, 0.70),
-    2px 2px 1px rgba(27, 27, 27, 0.70);
-
+  /* Progress */
   --wx-gantt-progress-marker-height: 26px;
   --wx-gantt-progress-border-color: #181818;
 
+  /* Baseline */
   --wx-gantt-baseline-border-radius: 4px;
 
-  /* table */
+  /* Table */
   --wx-table-select-background: var(--wx-gantt-select-color);
   --wx-table-select-focus-background: var(--wx-gantt-select-color);
   --wx-table-select-border: none;
@@ -102,9 +166,7 @@
   --wx-table-header-border: var(--wx-gantt-border);
   --wx-table-header-cell-border: var(--wx-gantt-border);
 
-  --wx-checkbox-border-color: 1px solid red;
-
-  /* grid */
+  /* Grid */
   --wx-grid-header-font:
     var(--wx-font-weight-md)
     var(--wx-font-size)
@@ -121,7 +183,7 @@
   --wx-grid-body-row-border: var(--wx-gantt-border);
   --wx-grid-body-cell-border: var(--wx-gantt-border);
 
-  /* timescale */
+  /* Timescale */
   --wx-timescale-font:
     var(--wx-font-weight-md)
     var(--wx-font-size-sm)
@@ -131,30 +193,34 @@
   --wx-timescale-shadow: none;
   --wx-timescale-border: var(--wx-gantt-taskscale-border);
 
-  /* grid and timescale */
-  --wx-gantt-holiday-background: #ffe0e0;
+  /* Holiday */
+  --wx-gantt-holiday-background: var(--holiday-bg);
   --wx-gantt-holiday-color: #9fa1ae;
 
-  /* markers */
+  /* Markers */
   --wx-gantt-marker-font: var(--wx-font-weight-md) var(--wx-font-size-sm)
     var(--wx-font-family);
   --wx-gantt-marker-font-color: #fff;
   --wx-gantt-marker-color: rgba(6, 189, 248, 0.77);
 
-  /* tooltips */
+  /* Tooltips */
   --wx-tooltip-font: var(--wx-font-weight) var(--wx-font-size)
     var(--wx-font-family);
   --wx-tooltip-font-color: #e6e6e6;
   --wx-tooltip-background: #4f525a;
 
-  /* sidebar */
+  /* Sidebar */
   --wx-sidebar-close-icon: #c0c3ce;
 }
 
-/* Custom task colors */
+/* ========================================
+   Custom Task Type Styles
+======================================== */
+
+/* Urgent Task */
 .wx-gantt .wx-bar.wx-task.urgent {
   background-color: var(--task-urgent-bg);
-  border: 1px solid var(--task-urgent-progress);
+  border: 1px solid var(--task-urgent-border);
   color: #ffffff;
 }
 
@@ -162,9 +228,10 @@
   background-color: var(--task-urgent-progress);
 }
 
+/* Narrow Task */
 .wx-gantt .wx-bar.wx-task.narrow {
   background-color: var(--task-narrow-bg);
-  border: 1px solid #63667a;
+  border: 1px solid var(--task-narrow-border);
   color: transparent;
   height: 10px !important;
   margin-top: 10px;
@@ -175,7 +242,7 @@
 }
 
 .wx-gantt .wx-bar.wx-task.narrow .wx-link {
-  background-color: #384047;
+  background-color: var(--task-narrow-link-bg);
   border-radius: 0;
 }
 
@@ -183,6 +250,7 @@
   border-radius: 0;
 }
 
+/* Progress Task */
 .wx-gantt .wx-bar.wx-task.progress {
   background-color: transparent;
   color: var(--wx-color-font);
@@ -198,10 +266,11 @@
   background-color: var(--task-progress-border);
 }
 
+/* Round Task */
 .wx-gantt .wx-bar.wx-task.round {
   background-color: var(--task-round-bg);
   border: 1px solid var(--task-round-bg);
-  color: #0f172a;
+  color: var(--task-round-text);
   border-radius: 999px;
 }
 
@@ -209,11 +278,14 @@
   background-color: var(--task-round-progress);
 }
 
-/* Milestone 스타일 - 마름모 형태 가시성 개선 */
+/* ========================================
+   Milestone Styles
+======================================== */
+
 .wx-gantt .wx-bar.wx-milestone {
-  background-color: var(--wx-gantt-milestone-color);
-  border: 2px solid #8e2a8c;
-  box-shadow: 0 2px 8px rgba(173, 68, 171, 0.4);
+  background-color: var(--milestone-color);
+  border: 2px solid var(--milestone-border);
+  box-shadow: var(--milestone-shadow);
 }
 
 .wx-gantt .wx-bar.wx-milestone .wx-bar-label {
@@ -221,34 +293,37 @@
   font-weight: 600;
 }
 
-/* Toolbar 스타일 */
+/* ========================================
+   Toolbar Styles
+======================================== */
+
 .wx-toolbar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.1rem;
-  background-color: #f8fafc;
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  gap: var(--toolbar-gap);
+  background-color: var(--toolbar-bg);
+  border: 1px solid var(--toolbar-border);
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--toolbar-shadow);
 }
 
 .wx-toolbar .wx-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.1rem;
+  gap: var(--toolbar-gap);
   padding: 0.6rem;
   border-radius: 0.3rem;
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  background-color: #ffffff;
+  border: 1px solid var(--toolbar-btn-border);
+  background-color: var(--toolbar-btn-bg);
   font-size: 0.8rem;
   line-height: 0.6rem;
   transition: background-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wx-toolbar .wx-button:hover {
-  background-color: #e2e8f0;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+  background-color: var(--toolbar-btn-hover);
+  box-shadow: var(--toolbar-btn-hover-shadow);
 }
 
 .wx-toolbar .wx-button[type="primary"] {
@@ -265,28 +340,27 @@
   font-size: 0.8rem;
 }
 
-.wx-2ZWgb4 {
-}
+/* ========================================
+   Editor Panel Styles
+======================================== */
 
-
-/* Editor 패널 기본값 복원 및 배경 지정 */
 .wx-portal .wx-editor {
-  background-color: #ffffff;
-  border: 1px solid rgb(0, 0, 0);
+  background-color: var(--editor-bg);
+  border: 1px solid var(--editor-border);
   border-radius: 0.75rem;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+  box-shadow: var(--editor-shadow);
 }
 
 .wx-editor .wx-form-header {
-  background-color: #f1f5f9;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
+  background-color: var(--editor-header-bg);
+  border-bottom: 1px solid var(--editor-header-border);
   font-size: 1rem;
   font-weight: 600;
 }
 
 .wx-editor .wx-form-footer {
-  background-color: #f8fafc;
-  border-top: 1px solid rgba(15, 23, 42, 0.12);
+  background-color: var(--editor-footer-bg);
+  border-top: 1px solid var(--editor-header-border);
 }
 
 .wx-editor .wx-button {
@@ -304,34 +378,77 @@
   background-color: #1d4ed8;
 }
 
-/* 주말 및 공휴일 스타일 */
-/* 주말 (토요일, 일요일) */
+/* ========================================
+   Weekend & Holiday Styles
+======================================== */
+
+/* Weekend (Saturday, Sunday) */
 .wx-weekend {
-  background-color: #f3f3f3 !important;
+  background-color: var(--weekend-bg) !important;
 }
 
-/* 공휴일 */
+/* Holiday */
 .wx-holiday {
-  background-color: #ffe0e0 !important;
+  background-color: var(--holiday-bg) !important;
 }
 
-/* Grid 영역의 주말/공휴일 스타일도 적용 */
+/* Grid area weekend/holiday */
 .wx-gantt .wx-grid .wx-weekend {
-  background-color: #e8f4f8 !important;
+  background-color: var(--weekend-grid-bg) !important;
 }
 
 .wx-gantt .wx-grid .wx-holiday {
-  background-color: #ffe0e0 !important;
+  background-color: var(--holiday-bg) !important;
 }
 
-/* Chart 영역의 주말/공휴일 스타일 */
+/* Chart area weekend/holiday */
 .wx-gantt .wx-chart .wx-weekend {
-  background-color: #f3f3f3 !important;
+  background-color: var(--weekend-bg) !important;
 }
 
 .wx-gantt .wx-chart .wx-holiday {
-  background-color: #ffe0e0 !important;
+  background-color: var(--holiday-bg) !important;
 }
+
+/* ========================================
+   Tooltip
+======================================== */
+
+.wx-task-tooltip {
+  min-width: 180px;
+  padding: 8px 12px;
+  background-color: var(--wx-tooltip-background);
+  color: var(--wx-color-primary-font);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.18);
+}
+
+.wx-task-tooltip .tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 4px;
+}
+
+.wx-task-tooltip .tooltip-row:last-child {
+  margin-bottom: 0;
+}
+
+.wx-task-tooltip .tooltip-label {
+  font-weight: 600;
+  color: var(--wx-color-secondary-font);
+}
+
+.wx-task-tooltip .tooltip-value {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ========================================
+   Miscellaneous
+======================================== */
 
 .wx-sections {
   background-color: rgba(255, 255, 255, 0.306);

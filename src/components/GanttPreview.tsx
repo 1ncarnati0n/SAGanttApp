@@ -4,16 +4,18 @@ import {
   Gantt,
   Toolbar,
   ContextMenu,
+  Tooltip,
   defaultColumns,
   defaultToolbarButtons,
-  type IColumnConfig
+  type IColumnConfig,
 } from "@svar-ui/react-gantt";
 import "@svar-ui/react-gantt/all.css";
 
-import "../styles/gantt.css";
+import "./styles/gantt.css";
 import { GanttControls } from "./gantt/GanttControls";
 import { WillowTheme } from "./gantt/WillowTheme";
 import { editorItems } from "./gantt/editorItems";
+import TaskTooltip from "./gantt/TaskTooltip";
 import { CELL_HEIGHT, CELL_WIDTH_MAP, TASK_TYPES } from "./gantt/taskConfig";
 import { useGanttSchedule } from "./gantt/useGanttSchedule";
 import type { ViewType } from "./gantt/types";
@@ -54,7 +56,7 @@ export function GanttPreview() {
   const [viewType, setViewType] = useState<ViewType>("day");
   const [showBaselines, setShowBaselines] = useState(false);
   const [ganttApi, setGanttApi] = useState<any | null>(null);
-  const { schedule, isLoading, saveState, hasChanges, handleSave, handlers, initGantt } = useGanttSchedule();
+  const { schedule, isLoading, saveState, hasChanges, handleSave, initGantt } = useGanttSchedule();
 
   const columns = useMemo<IColumnConfig[]>(() => {
     return defaultColumns.map((column) => {
@@ -171,18 +173,20 @@ export function GanttPreview() {
           <>
             <ContextMenu api={ganttApi}>
               <WillowTheme>
-                <Gantt
-                  init={handleInit}
-                  tasks={schedule.tasks}
-                  links={schedule.links}
-                  scales={scales}
-                  columns={columns}
-                  taskTypes={TASK_TYPES}
-                  cellWidth={CELL_WIDTH_MAP[viewType]}
-                  cellHeight={CELL_HEIGHT}
-                  highlightTime={highlightTime}
-                  {...handlers}
-                />
+                <Tooltip api={ganttApi ?? undefined} content={TaskTooltip}>
+                  <Gantt
+                    init={handleInit}
+                    tasks={schedule.tasks}
+                    links={schedule.links}
+                    scales={scales}
+                    columns={columns}
+                    taskTypes={TASK_TYPES}
+                    cellWidth={CELL_WIDTH_MAP[viewType]}
+                    cellHeight={CELL_HEIGHT}
+                    highlightTime={highlightTime}
+                    baselines={showBaselines}
+                  />
+                </Tooltip>
               </WillowTheme>
             </ContextMenu>
             {ganttApi && <Editor api={ganttApi} items={editorItems} />}

@@ -16,13 +16,14 @@
   --background: #f8fafc;
   --foreground: #1f2933;
   --border: rgba(0, 0, 0, 0.1);
+  --border-dark: #000000;
 
   /* Button Colors */
   --btn-primary: #3b82f6;
   --btn-primary-hover: #2563eb;
   --btn-primary-foreground: #ffffff;
 
-  --btn-success: #ffffff;
+  --btn-success: #10b981;
   --btn-success-hover: #059669;
   --btn-success-foreground: #ffffff;
 
@@ -68,8 +69,8 @@ body {
   
   .btn {
     padding: var(--spacing-sm) var(--spacing-sm);
-    border: 1px solid black;
-    border-radius: var(none);
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.8rem;
     font-weight: var(--font-weight-medium);
@@ -93,7 +94,7 @@ body {
 
   .btn-view.active {
     background-color: var(--btn-success);
-    color: ;
+    color: var(--btn-success-foreground);
     font-weight: var(--font-weight-bold);
   }
 
