@@ -11,9 +11,9 @@ export const TASK_TYPES = [
 ];
 
 export const CELL_WIDTH_MAP: Record<ViewType, number> = {
-  day: 34,
+  day: 36,
   week: 120,
   month: 180,
 };
 
-export const CELL_HEIGHT = 34;
+export const CELL_HEIGHT = 36;

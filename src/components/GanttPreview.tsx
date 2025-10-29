@@ -21,7 +21,7 @@ import { useGanttSchedule } from "./gantt/useGanttSchedule";
 import type { ViewType } from "./gantt/types";
 import { isWeekend, isKoreanHoliday } from "../data/koreanHolidays";
 
-const START_COLUMN_WIDTH = 120;
+const START_COLUMN_WIDTH = 100;
 
 interface ScaleConfig {
   unit: "year" | "month" | "week" | "day" | "hour";
@@ -111,7 +111,7 @@ export function GanttPreview() {
       if (column.id === "duration") {
         return {
           ...column,
-          header: "일수",
+          header: "D",
           width: Math.round(START_COLUMN_WIDTH * 0.45),
         };
       }
@@ -179,8 +179,8 @@ export function GanttPreview() {
   }, []);
 
   return (
-    <section className="flex flex-1 flex-col gap-4">
-      <header className="flex flex-col gap-1">
+    <section className="flex flex-col gap-2">
+      <header>
         <h2 className="text-2xl font-semibold" >공동주택 골조공사 표준공정</h2>
         <p className="text-sm text-slate-500">
           Toolbar 및 ContextMenu를 사용하여 작업을 추가, 편집, 삭제할 수 있습니다.
@@ -199,9 +199,9 @@ export function GanttPreview() {
 
       {ganttApi && <Toolbar api={ganttApi} items={toolbarItems} />}
 
-      <div className="gantt-wrapper relative flex-1" role="group" aria-label="프로젝트 간트 차트">
+      <div className="gantt-wrapper" role="group" aria-label="프로젝트 간트 차트">
         {isLoading ? (
-          <div className="flex h-full items-center justify-center bg-white/70 text-sm text-slate-600">
+          <div>
             데이터를 불러오는 중...
           </div>
         ) : schedule ? (
@@ -227,7 +227,7 @@ export function GanttPreview() {
             {ganttApi && <Editor api={ganttApi} items={editorItems} />}
           </>
         ) : (
-          <div className="flex h-full items-center justify-center bg-white/70 text-sm text-slate-600">
+          <div>
             데이터를 불러오지 못했습니다.
           </div>
         )}
