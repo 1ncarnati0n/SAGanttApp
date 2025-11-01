@@ -1,18 +1,13 @@
 import { Combo, RadioButtonGroup } from "@svar-ui/react-core";
 import { defaultEditorItems, registerEditorItem } from "@svar-ui/react-gantt";
 
-import { users } from "../../data/users";
+import { users, type GanttUserOption } from "../../data/users";
 import { TASK_TYPES } from "./taskConfig";
 
-interface AssignedComboOption {
-  value: unknown;
-  label: string;
-}
-
 interface AssignedComboProps {
-  value: unknown;
-  options: AssignedComboOption[];
-  onChange: (payload: { value: unknown }) => void;
+  value: string | number | undefined;
+  options: GanttUserOption[];
+  onChange: (payload: { value: string | number | undefined }) => void;
 }
 
 const FIELD_OVERRIDES: Record<string, { label?: string; placeholder?: string }> = {
@@ -25,17 +20,20 @@ const FIELD_OVERRIDES: Record<string, { label?: string; placeholder?: string }> 
   links: { label: "연결 관계" },
 };
 
-const AssignedCombo = ({ value, options, onChange }: AssignedComboProps) => (
-  <Combo
-    clear
-    options={options}
-    value={value}
-    onChange={onChange}
-    placeholder="담당자를 선택하세요"
-  >
-    {({ option }: { option: AssignedComboOption }) => <span>{option?.label ?? ""}</span>}
-  </Combo>
-);
+const AssignedCombo = ({ value, options, onChange }: AssignedComboProps) => {
+  const renderOption = ({ option }: { option: GanttUserOption }) => <span>{option?.label ?? ""}</span>;
+  return (
+    <Combo
+      clear
+      options={options}
+      value={value}
+      onChange={onChange}
+      placeholder="담당자를 선택하세요"
+    >
+      {renderOption as any}
+    </Combo>
+  );
+};
 
 registerEditorItem("radio", RadioButtonGroup);
 registerEditorItem("assigned-combo", AssignedCombo);
@@ -91,11 +89,7 @@ const createEditorItems = () => {
         id: "task-assigned-field",
         comp: "assigned-combo",
         label: "담당자",
-        options: users.map(({ id, label }) => ({
-          id,
-          label,
-          value: id,
-        })),
+        options: users,
         config: {
           placeholder: "담당자를 선택하세요",
         },

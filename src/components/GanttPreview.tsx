@@ -127,41 +127,63 @@ export function GanttPreview() {
     setGanttApi(api);
   };
 
-  // Toolbar 버튼 설정 - 한글화
+  // Toolbar 버튼 설정 - 한글화 및 아이콘 커스터마이징
   const toolbarItems = useMemo(() => {
     return defaultToolbarButtons.map((button) => {
       if (button.id === "add-task") {
-        return { ...button, text: "새 작업" };
+        return { ...button, text: "새 작업", icon: button.icon}; // icon 속성으로 아이콘 지정
       }
       if (button.id === "edit-task") {
-        return { ...button, menuText: "편집" };
+        return { ...button, Text: "편집", icon: button.icon || "wxi-edit" }; // 아이콘 변경 가능
       }
       if (button.id === "delete-task") {
-        return { ...button, menuText: "삭제" };
+        return { ...button, menuText: "삭제", icon: button.icon || "wxi-delete" };
       }
       if (button.id === "move-task:up") {
-        return { ...button, menuText: "위로 이동" };
+        return { ...button, menuText: "위로 이동", icon: button.icon || "wxi-angle-up" };
       }
       if (button.id === "move-task:down") {
-        return { ...button, menuText: "아래로 이동" };
+        return { ...button, menuText: "아래로 이동", icon: button.icon || "wxi-angle-down" };
       }
       if (button.id === "copy-task") {
-        return { ...button, menuText: "복사" };
+        return { ...button, menuText: "복사", icon: button.icon || "wxi-content-copy" };
       }
       if (button.id === "cut-task") {
-        return { ...button, menuText: "잘라내기" };
+        return { ...button, menuText: "잘라내기", icon: button.icon || "wxi-content-cut" };
       }
       if (button.id === "paste-task") {
-        return { ...button, menuText: "붙여넣기" };
+        return { ...button, menuText: "붙여넣기", icon: button.icon || "wxi-content-paste" };
       }
       if (button.id === "indent-task:add") {
-        return { ...button, menuText: "들여쓰기" };
+        return { ...button, menuText: "들여쓰기", icon: button.icon || "wxi-indent" };
       }
       if (button.id === "indent-task:remove") {
-        return { ...button, menuText: "내어쓰기" };
+        return { ...button, menuText: "내어쓰기", icon: button.icon || "wxi-unindent" };
       }
-      return button;
+      return button; // 기본 아이콘 유지
     });
+  }, []);
+
+  // Editor topBar 설정 - 아이콘 커스터마이징
+  const editorTopBar = useMemo(() => {
+    return {
+      items: [
+        { comp: "button", text: "닫기", id: "close" }, // 닫기 아이콘을 다른 것으로 변경하려면 여기 수정
+        { comp: "spacer", icon: "", id: "spacer" },
+        {
+          comp: "button",
+          type: "danger",
+          text: "삭제",
+          id: "delete",
+        },
+        {
+          comp: "button",
+          type: "primary",
+          text: "저장",
+          id: "save",
+        },
+      ],
+    };
   }, []);
 
   // 주말 및 공휴일 하이라이트 함수
@@ -219,12 +241,18 @@ export function GanttPreview() {
                     cellWidth={CELL_WIDTH_MAP[viewType]}
                     cellHeight={CELL_HEIGHT}
                     highlightTime={highlightTime}
-                    baselines={showBaselines}
+                    {...({ baselines: showBaselines } as any)}
                   />
                 </Tooltip>
               </WillowTheme>
             </ContextMenu>
-            {ganttApi && <Editor api={ganttApi} items={editorItems} />}
+            {ganttApi && (
+              <Editor
+                api={ganttApi}
+                items={editorItems}
+                topBar={editorTopBar}
+              />
+            )}
           </>
         ) : (
           <div>
