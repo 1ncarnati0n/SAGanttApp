@@ -11,7 +11,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@svar-ui/react-gantt": "^2.3.2",
+    "@svar-ui/react-gantt": "^2.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
