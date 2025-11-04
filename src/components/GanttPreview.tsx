@@ -81,7 +81,13 @@ export function GanttPreview() {
   const [viewType, setViewType] = useState<ViewType>("day");
   const [showBaselines, setShowBaselines] = useState(false);
   const [ganttApi, setGanttApi] = useState<any | null>(null);
-  const { schedule, isLoading, saveState, hasChanges, handleSave, initGantt } = useGanttSchedule();
+  const { 
+    schedule, 
+    isLoading, 
+    saveState, 
+    hasChanges, 
+    handleSave, 
+    initGantt } = useGanttSchedule();
 
   const columns = useMemo<IColumnConfig[]>(() => {
     return defaultColumns.map((column) => {
