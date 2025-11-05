@@ -26,7 +26,7 @@ export function GanttControls({
   saveState,
 }: GanttControlsProps) {
   return (
-    <div className="p-2 bg-gray-100 rounded">
+    <div className="p-2 bg-gray-100">
       {VIEW_OPTIONS.map((option) => (
         <button
           key={option.id}
