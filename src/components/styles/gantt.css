@@ -216,7 +216,8 @@
   --wx-tooltip-font: var(--wx-font-weight) var(--wx-font-size)
     var(--wx-font-family);
   --wx-tooltip-font-color: #e6e6e6;
-  --wx-tooltip-background: #4f525a;
+  --wx-tooltip-background: #afafaf;
+
 
   /* Sidebar */
   --wx-sidebar-close-icon: #c0c3ce;
@@ -738,6 +739,7 @@
 .wx-task-tooltip {
   min-width: 180px;
   padding: 8px 12px;
+  border: 1px solid var(--wx-tooltip-border);
   background-color: var(--wx-tooltip-background);
   color: var(--wx-color-primary-font);
   font-size: 0.78rem;
