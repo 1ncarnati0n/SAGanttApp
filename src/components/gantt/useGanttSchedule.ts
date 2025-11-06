@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 import type { SaveState, ScheduleData } from "./types";
 
@@ -552,17 +553,11 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
         schedule?.scales ?? scalesRef.current,
       );
 
-      const response = await fetch("/api/mock", {
-        method: "POST",
+      const response = await axios.post("/api/mock", payload, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
       });
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.statusText}`);
-      }
 
       setSaveState("saved");
       setHasChanges(false);
@@ -583,12 +578,8 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
       setIsLoading(true);
 
       try {
-        const response = await fetch("/api/mock");
-        if (!response.ok) {
-          throw new Error(`Request failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const response = await axios.get("/api/mock");
+        const data = response.data;
         if (!isMounted) {
           return;
         }
