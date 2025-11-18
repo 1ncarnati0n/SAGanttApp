@@ -8,27 +8,6 @@ export interface Holiday {
   name: string;
 }
 
-export const koreanHolidays2024: Holiday[] = [
-  { date: '2024-01-01', name: '신정' },
-  { date: '2024-02-09', name: '설날 연휴' },
-  { date: '2024-02-10', name: '설날' },
-  { date: '2024-02-11', name: '설날 연휴' },
-  { date: '2024-02-12', name: '대체공휴일(설날)' },
-  { date: '2024-03-01', name: '삼일절' },
-  { date: '2024-04-10', name: '제22대 국회의원 선거' },
-  { date: '2024-05-05', name: '어린이날' },
-  { date: '2024-05-06', name: '대체공휴일(어린이날)' },
-  { date: '2024-05-15', name: '부처님오신날' },
-  { date: '2024-06-06', name: '현충일' },
-  { date: '2024-08-15', name: '광복절' },
-  { date: '2024-09-16', name: '추석 연휴' },
-  { date: '2024-09-17', name: '추석' },
-  { date: '2024-09-18', name: '추석 연휴' },
-  { date: '2024-10-03', name: '개천절' },
-  { date: '2024-10-09', name: '한글날' },
-  { date: '2024-12-25', name: '크리스마스' },
-];
-
 export const koreanHolidays2025: Holiday[] = [
   { date: '2025-01-01', name: '신정' },
   { date: '2025-01-28', name: '설날 연휴' },
@@ -69,7 +48,6 @@ export const koreanHolidays2026: Holiday[] = [
 
 // 모든 공휴일을 날짜 문자열 Set으로 변환 (빠른 조회를 위해)
 const allHolidaysSet = new Set<string>([
-  ...koreanHolidays2024.map(h => h.date),
   ...koreanHolidays2025.map(h => h.date),
   ...koreanHolidays2026.map(h => h.date),
 ]);
@@ -104,7 +82,6 @@ export function getHolidayName(date: Date): string | null {
   const dateStr = date.toISOString().split('T')[0];
 
   const allHolidays = [
-    ...koreanHolidays2024,
     ...koreanHolidays2025,
     ...koreanHolidays2026,
   ];
