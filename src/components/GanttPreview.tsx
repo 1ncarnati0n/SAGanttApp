@@ -81,12 +81,12 @@ export function GanttPreview() {
   const [viewType, setViewType] = useState<ViewType>("day");
   const [showBaselines, setShowBaselines] = useState(false);
   const [ganttApi, setGanttApi] = useState<any | null>(null);
-  const { 
-    schedule, 
-    isLoading, 
-    saveState, 
-    hasChanges, 
-    handleSave, 
+  const {
+    schedule,
+    isLoading,
+    saveState,
+    hasChanges,
+    handleSave,
     initGantt } = useGanttSchedule();
 
   const columns = useMemo<IColumnConfig[]>(() => {
@@ -137,7 +137,7 @@ export function GanttPreview() {
   const toolbarItems = useMemo(() => {
     return defaultToolbarButtons.map((button) => {
       if (button.id === "add-task") {
-        return { ...button, text: "새 작업", icon: button.icon}; // icon 속성으로 아이콘 지정
+        return { ...button, text: "새 작업", icon: button.icon }; // icon 속성으로 아이콘 지정
       }
       if (button.id === "edit-task") {
         return { ...button, Text: "편집", icon: button.icon || "wxi-edit" }; // 아이콘 변경 가능

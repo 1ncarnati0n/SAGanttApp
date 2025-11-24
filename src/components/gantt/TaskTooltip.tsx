@@ -37,28 +37,36 @@ const TaskTooltip: FC<TaskTooltipProps> = ({ data }) => {
 
   return (
     <div className="wx-task-tooltip">
-      <div className="tooltip-row">
-        <span className="tooltip-label">작업명</span>
-        <span className="tooltip-value">{String(data.text ?? "-")}</span>
+      <div className="tooltip-header">
+        {String(data.text ?? "작업 상세")}
       </div>
+
       <div className="tooltip-row">
         <span className="tooltip-label">유형</span>
-        <span className="tooltip-value">{String(data.type ?? "-")}</span>
+        <span className="tooltip-value">{String(data.type ?? "일반")}</span>
       </div>
+
       <div className="tooltip-row">
-        <span className="tooltip-label">시작</span>
-        <span className="tooltip-value">{formatDate(data.start)}</span>
+        <span className="tooltip-label">기간</span>
+        <span className="tooltip-value">
+          {formatDate(data.start)} ~ {isMilestone ? "" : formatDate(inclusiveEnd)}
+        </span>
       </div>
-      {!isMilestone && (
-        <div className="tooltip-row">
-          <span className="tooltip-label">종료</span>
-          <span className="tooltip-value">{formatDate(inclusiveEnd)}</span>
-        </div>
-      )}
+
       {progress && (
         <div className="tooltip-row">
-          <span className="tooltip-label">진행율</span>
-          <span className="tooltip-value">{progress}</span>
+          <span className="tooltip-label">진행률</span>
+          <span className="tooltip-value" style={{ color: "var(--color-primary)" }}>
+            {progress}
+          </span>
+        </div>
+      )}
+
+      {/* 담당자 정보가 있다면 표시 (예시) */}
+      {!!data.assigned && (
+        <div className="tooltip-row">
+          <span className="tooltip-label">담당자</span>
+          <span className="tooltip-value">{String(data.assigned)}</span>
         </div>
       )}
     </div>
