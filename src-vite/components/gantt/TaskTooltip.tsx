@@ -1,5 +1,3 @@
-"use client";
-
 import type { FC } from "react";
 
 interface TaskTooltipProps {
@@ -76,4 +74,3 @@ const TaskTooltip: FC<TaskTooltipProps> = ({ data }) => {
 };
 
 export default TaskTooltip;
-

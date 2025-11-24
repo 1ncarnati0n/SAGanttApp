@@ -1,5 +1,3 @@
-"use client";
-
 import { Combo, RadioButtonGroup } from "@svar-ui/react-core";
 import { defaultEditorItems, registerEditorItem } from "@svar-ui/react-gantt";
 
@@ -37,11 +35,8 @@ const AssignedCombo = ({ value, options, onChange }: AssignedComboProps) => {
   );
 };
 
-// Ensure this runs on client only, though nextjs client components will handle it
-if (typeof window !== 'undefined') {
-    registerEditorItem("radio", RadioButtonGroup);
-    registerEditorItem("assigned-combo", AssignedCombo);
-}
+registerEditorItem("radio", RadioButtonGroup);
+registerEditorItem("assigned-combo", AssignedCombo);
 
 const createEditorItems = () => {
   const baseItems = defaultEditorItems
@@ -106,4 +101,3 @@ const createEditorItems = () => {
 };
 
 export const editorItems = createEditorItems();
-

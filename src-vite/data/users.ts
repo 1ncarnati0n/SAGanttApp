@@ -9,4 +9,3 @@ export const users: GanttUserOption[] = [
   { id: 3, label: "JMHong" },
   { id: 4, label: "SMShin" },
 ];
-
