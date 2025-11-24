@@ -1,10 +1,18 @@
-export type ViewType = "day" | "week" | "month";
+/**
+ * Re-export types from lib/gantt/types
+ * This file is kept for backward compatibility
+ */
 
-export type SaveState = "idle" | "saving" | "saved" | "error";
+export type {
+  ViewType,
+  SaveState,
+  Task,
+  Link,
+  Schedule,
+  TaskId,
+  LinkId,
+} from "@/lib/gantt/types";
 
-export interface ScheduleData {
-  tasks: Array<Record<string, unknown>>;
-  links: Array<Record<string, unknown>>;
-  scales: Array<Record<string, unknown>>;
-}
+// Legacy type alias
+export type { Schedule as ScheduleData } from "@/lib/gantt/types";
 

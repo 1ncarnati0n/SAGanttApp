@@ -1,0 +1,11 @@
+{
+  "[project]/src/components/GanttChart.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/src/components/GanttChart.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/node_modules_f290b506._.js",
+      "static/chunks/src_3ab2dfc5._.js",
+      "static/chunks/src_styles_29d9cdd5._.css",
+      "static/chunks/src_components_GanttChart_tsx_60f51d65._.js"
+    ]
+  }
+}
