@@ -17,4 +17,3 @@ export const CELL_WIDTH_MAP: Record<ViewType, number> = {
 };
 
 export const CELL_HEIGHT = 36;
-

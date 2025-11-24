@@ -89,4 +89,3 @@ export function getHolidayName(date: Date): string | null {
   const holiday = allHolidays.find(h => h.date === dateStr);
   return holiday ? holiday.name : null;
 }
-

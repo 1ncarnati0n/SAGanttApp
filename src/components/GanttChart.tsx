@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useState, useCallback } from "react";
 import {
   Editor,
@@ -9,9 +11,10 @@ import {
   defaultToolbarButtons,
   type IColumnConfig,
 } from "@svar-ui/react-gantt";
-import "@svar-ui/react-gantt/all.css";
+import "@/styles/svar-gantt-fixed.css";
 
-import "./styles/gantt.css";
+import "@/styles/gantt.css"; // Corrected import path for Next.js
+
 import { GanttControls } from "./gantt/GanttControls";
 import { WillowTheme } from "./gantt/WillowTheme";
 import { editorItems } from "./gantt/editorItems";
@@ -77,16 +80,16 @@ const formatDisplayEnd = (task: Record<string, any>): string => {
   return dateFormatter.format(inclusive);
 };
 
-export function GanttPreview() {
+export function GanttChart() {
   const [viewType, setViewType] = useState<ViewType>("day");
   const [showBaselines, setShowBaselines] = useState(false);
   const [ganttApi, setGanttApi] = useState<any | null>(null);
-  const { 
-    schedule, 
-    isLoading, 
-    saveState, 
-    hasChanges, 
-    handleSave, 
+  const {
+    schedule,
+    isLoading,
+    saveState,
+    hasChanges,
+    handleSave,
     initGantt } = useGanttSchedule();
 
   const columns = useMemo<IColumnConfig[]>(() => {
@@ -137,7 +140,7 @@ export function GanttPreview() {
   const toolbarItems = useMemo(() => {
     return defaultToolbarButtons.map((button) => {
       if (button.id === "add-task") {
-        return { ...button, text: "새 작업", icon: button.icon}; // icon 속성으로 아이콘 지정
+        return { ...button, text: "새 작업", icon: button.icon }; // icon 속성으로 아이콘 지정
       }
       if (button.id === "edit-task") {
         return { ...button, Text: "편집", icon: button.icon || "wxi-edit" }; // 아이콘 변경 가능
@@ -207,11 +210,7 @@ export function GanttPreview() {
   }, []);
 
   return (
-    <section>
-      <header>
-        <h2 className="text-2xl font-semibold" >공동주택 골조공사 표준공정</h2>
-      </header>
-
+    <section className="flex flex-col h-full">
       <GanttControls
         viewType={viewType}
         onViewTypeChange={setViewType}
@@ -224,9 +223,9 @@ export function GanttPreview() {
 
       {ganttApi && <Toolbar api={ganttApi} items={toolbarItems} />}
 
-      <div className="gantt-wrapper" role="group" aria-label="프로젝트 간트 차트">
+      <div className="gantt-wrapper flex-1 relative" role="group" aria-label="프로젝트 간트 차트">
         {isLoading ? (
-          <div>
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-50">
             데이터를 불러오는 중...
           </div>
         ) : schedule ? (
@@ -258,7 +257,7 @@ export function GanttPreview() {
             )}
           </>
         ) : (
-          <div>
+          <div className="p-4 text-red-500">
             데이터를 불러오지 못했습니다.
           </div>
         )}
@@ -267,4 +266,3 @@ export function GanttPreview() {
   );
 }
 
-export default GanttPreview;

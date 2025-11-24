@@ -1,32 +1,39 @@
 {
-  "name": "sagantt-r1",
-  "version": "0.1.0",
+  "name": "sagantt-app",
+  "version": "0.2.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "next dev",
+    "dev:vite": "vite",
+    "build": "next build",
+    "build:vite": "vite build",
+    "start": "next start",
     "preview": "vite preview",
+    "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@svar-ui/react-gantt": "^2.3.3",
     "axios": "^1.13.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "next": "16.0.3",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.4.3",
-    "@types/node": "^20.12.12",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "@vitejs/plugin-react": "5.0.2",
     "autoprefixer": "^10.4.19",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.3",
     "jsdom": "^24.0.0",
     "postcss": "^8.4.40",
-    "tailwindcss": "^3.4.14",
-    "typescript": "^5.5.4",
+    "tailwindcss": "^4",
+    "typescript": "^5",
     "vite": "7.1.5",
     "vitest": "^1.6.0"
   }

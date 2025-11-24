@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
@@ -516,6 +514,11 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
   );
 
   const handleSave = useCallback(async () => {
+    if (!import.meta.env.DEV) {
+      console.error("Not in development mode");
+      return;
+    }
+
     const api = apiRef.current;
     if (!api) {
       console.error("Gantt API is not ready");
@@ -550,8 +553,7 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
         schedule?.scales ?? scalesRef.current,
       );
 
-      // API call to Next.js route
-      await axios.post("/api/mock", payload, {
+      const response = await axios.post("/api/mock", payload, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -576,7 +578,6 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
       setIsLoading(true);
 
       try {
-        // API call to Next.js route
         const response = await axios.get("/api/mock");
         const data = response.data;
         if (!isMounted) {
@@ -628,9 +629,3 @@ export const useGanttSchedule = (): UseGanttScheduleResult => {
     initGantt,
   };
 };
-
-
-
-
-
-

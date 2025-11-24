@@ -7,4 +7,3 @@ export interface ScheduleData {
   links: Array<Record<string, unknown>>;
   scales: Array<Record<string, unknown>>;
 }
-

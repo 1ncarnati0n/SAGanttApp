@@ -1,5 +1,3 @@
-"use client";
-
 import type { SaveState, ViewType } from "./types";
 
 interface GanttControlsProps {
@@ -28,60 +26,41 @@ export function GanttControls({
   saveState,
 }: GanttControlsProps) {
   return (
-    <div className="p-2 bg-gray-100 flex items-center gap-2 rounded-md mb-2">
+    <div className="p-2 bg-gray-100">
       {VIEW_OPTIONS.map((option) => (
         <button
           key={option.id}
           type="button"
           onClick={() => onViewTypeChange(option.id)}
-          className={`px-3 py-1 rounded text-sm ${
-            viewType === option.id
-              ? "bg-blue-500 text-white"
-              : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-          }`}
+          className={`btn btn-view ${viewType === option.id ? "active" : ""}`}
           aria-pressed={viewType === option.id}
         >
           {option.label}
         </button>
       ))}
-      <div className="h-6 w-px bg-gray-300 mx-2" />
       <button
         type="button"
         onClick={onToggleBaselines}
-        className={`px-3 py-1 rounded text-sm ${
-          showBaselines
-            ? "bg-gray-700 text-white"
-            : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-        }`}
+        className={`btn btn-toggle ${showBaselines ? "active" : ""}`}
         aria-pressed={showBaselines}
       >
         계획 일정 {showBaselines ? "숨기기" : "표시"}
       </button>
-      <div className="flex-1" />
       <button
         type="button"
         onClick={onSave}
         disabled={!hasChanges || saveState === "saving"}
-        className={`px-4 py-1 rounded text-sm font-medium transition-colors ${
-          !hasChanges || saveState === "saving"
-            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "bg-green-600 text-white hover:bg-green-700"
-        }`}
+        className="btn btn-save"
         title={`hasChanges: ${hasChanges}, saveState: ${saveState}`}
       >
         {saveState === "saving" ? "저장 중..." : "저장"}
       </button>
       <span className="ml-2 text-sm text-gray-600" role="status">
         {hasChanges && saveState === "idle" && "변경 사항이 있습니다."}
-        {saveState === "saved" && "저장되었습니다."}
-        {saveState === "error" && "저장 실패."}
+        {saveState === "saved" && "변경 내용이 mock.json에 저장되었습니다."}
+        {saveState === "error" && "저장 실패 - 콘솔을 확인하세요."}
+        <span className="ml-2 text-xs text-gray-400">(Debug: hasChanges={String(hasChanges)})</span>
       </span>
     </div>
   );
 }
-
-
-
-
-
-
