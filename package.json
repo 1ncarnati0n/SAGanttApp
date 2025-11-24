@@ -4,14 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:vite": "vite",
     "build": "next build",
-    "build:vite": "vite build",
     "start": "next start",
-    "preview": "vite preview",
-    "lint": "eslint",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "lint": "eslint"
   },
   "dependencies": {
     "@svar-ui/react-gantt": "^2.3.3",
@@ -22,19 +17,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@testing-library/jest-dom": "^6.4.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "5.0.2",
-    "autoprefixer": "^10.4.19",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
-    "jsdom": "^24.0.0",
     "postcss": "^8.4.40",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "vite": "7.1.5",
-    "vitest": "^1.6.0"
+    "typescript": "^5"
   }
 }
