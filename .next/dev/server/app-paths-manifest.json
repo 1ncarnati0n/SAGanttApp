@@ -1,9 +1,9 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/api/mock/route": "app/api/mock/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/auth/login/page": "app/auth/login/page.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/gantt/[id]/page": "app/gantt/[id]/page.js",
   "/dashboard/projects/[id]/page": "app/dashboard/projects/[id]/page.js",
-  "/gantt/[id]/page": "app/gantt/[id]/page.js"
+  "/auth/login/page": "app/auth/login/page.js"
 }
