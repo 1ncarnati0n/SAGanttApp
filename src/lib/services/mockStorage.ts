@@ -8,6 +8,18 @@ import type { GanttChart, CreateGanttChartDTO } from "./ganttCharts";
 import type { Task } from "@/lib/gantt/types";
 import type { Link } from "@/lib/gantt/types";
 
+type MockTask = Task & {
+  gantt_chart_id: string;
+  project_id: string;
+  user_id?: string;
+  created_at?: string;
+};
+
+type MockLink = Link & {
+  gantt_chart_id: string;
+  created_at?: string;
+};
+
 const STORAGE_KEYS = {
   projects: "contech_gantt_projects",
   charts: "contech_gantt_charts",
@@ -53,12 +65,13 @@ export function initializeSampleData(): void {
     project_id: "sample-project-1",
     name: "샘플 Gantt 차트",
     description: "기본 샘플 차트",
+    start_date: "2023-01-01",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
 
   // Sample Tasks
-  const sampleTasks: Task[] = [
+  const sampleTasks: MockTask[] = [
     {
       id: "1",
       gantt_chart_id: "sample-chart-1",
@@ -138,7 +151,7 @@ export function initializeSampleData(): void {
   ];
 
   // Sample Links
-  const sampleLinks: Link[] = [
+  const sampleLinks: MockLink[] = [
     {
       id: "1",
       gantt_chart_id: "sample-chart-1",
@@ -316,7 +329,7 @@ export function deleteMockGanttChart(id: string): void {
 export function getMockTasks(ganttChartId: string): Task[] {
   if (!isBrowser) return [];
   const data = localStorage.getItem(STORAGE_KEYS.tasks);
-  const allTasks: Array<Task & { gantt_chart_id: string }> = data ? JSON.parse(data) : [];
+  const allTasks: MockTask[] = data ? JSON.parse(data) : [];
   return allTasks.filter((t) => t.gantt_chart_id === ganttChartId);
 }
 
@@ -325,6 +338,6 @@ export function getMockTasks(ganttChartId: string): Task[] {
 export function getMockLinks(ganttChartId: string): Link[] {
   if (!isBrowser) return [];
   const data = localStorage.getItem(STORAGE_KEYS.links);
-  const allLinks: Array<Link & { gantt_chart_id: string }> = data ? JSON.parse(data) : [];
+  const allLinks: MockLink[] = data ? JSON.parse(data) : [];
   return allLinks.filter((l) => l.gantt_chart_id === ganttChartId);
 }
