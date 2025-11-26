@@ -1,6 +1,36 @@
 import { NextResponse } from "next/server";
 
-let mockData: any = {
+interface Task {
+  id: string | number;
+  text: string;
+  type: string;
+  start: string;
+  end?: string;
+  progress: number;
+  parent: string | number;
+  open?: boolean;
+}
+
+interface Link {
+  id: string | number;
+  source: string | number;
+  target: string | number;
+  type: string;
+}
+
+interface Scale {
+  unit: string;
+  step: number;
+  format: string;
+}
+
+interface MockData {
+  tasks: Task[];
+  links: Link[];
+  scales: Scale[];
+}
+
+let mockData: MockData = {
   "tasks": [
     {
       "id": "temp://1761624298866",
@@ -242,7 +272,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     mockData = body; // In-memory update (will reset on server restart)
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to save data" }, { status: 500 });
   }
 }

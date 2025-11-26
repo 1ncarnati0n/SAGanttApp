@@ -70,7 +70,7 @@ export function useGanttSupabase({
       // const dataStore = stores?.data;
       // const state = dataStore?.getState ? dataStore.getState() : null;
       // const currentLinks = state?.links || [];
-      
+
       // For now, we'll use a simple approach
       // Save tasks
       // const existingTasks = await getTasks(ganttChartId);
@@ -83,7 +83,7 @@ export function useGanttSupabase({
       setSaveState("saved");
       setHasChanges(false);
       toast.success("저장되었습니다");
-      
+
       onSuccess?.();
 
       // Reset saved state after 2 seconds
@@ -95,7 +95,7 @@ export function useGanttSupabase({
       setSaveState("error");
       toast.error("저장 실패");
     }
-  }, [ganttChartId, onSuccess]);
+  }, [onSuccess]);
 
   return {
     saveState,

@@ -61,7 +61,7 @@ const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   day: "2-digit",
 });
 
-const formatDisplayEnd = (task: Record<string, any>): string => {
+const formatDisplayEnd = (task: Record<string, unknown>): string => {
   const exclusiveEnd =
     task.end instanceof Date ? task.end : task.end ? new Date(task.end as string) : undefined;
   if (!exclusiveEnd) {
@@ -83,6 +83,7 @@ const formatDisplayEnd = (task: Record<string, any>): string => {
 export function GanttChart() {
   const [viewType, setViewType] = useState<ViewType>("day");
   const [showBaselines, setShowBaselines] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [ganttApi, setGanttApi] = useState<any | null>(null);
   const {
     schedule,
@@ -113,7 +114,7 @@ export function GanttChart() {
           header: "종료",
           width: START_COLUMN_WIDTH,
           format: "yyyy-MM-dd",
-          template: (_: unknown, task: Record<string, any>) => formatDisplayEnd(task),
+          template: (_: unknown, task: Record<string, unknown>) => formatDisplayEnd(task),
         };
       }
 
@@ -131,6 +132,7 @@ export function GanttChart() {
 
   const scales = useMemo(() => TIME_SCALE_CONFIGS[viewType].scales, [viewType]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInit = (api: any) => {
     initGantt(api);
     setGanttApi(api);
@@ -243,6 +245,7 @@ export function GanttChart() {
                     cellWidth={CELL_WIDTH_MAP[viewType]}
                     cellHeight={CELL_HEIGHT}
                     highlightTime={highlightTime}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     {...({ baselines: showBaselines } as any)}
                   />
                 </Tooltip>
@@ -265,4 +268,3 @@ export function GanttChart() {
     </section>
   );
 }
-

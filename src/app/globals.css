@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @source "../../src";
+@plugin "@tailwindcss/typography";
+
+@variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* Base Colors - OpenAI Style (High Contrast) */
@@ -19,7 +22,31 @@
   --color-primary-900: #171717;
   --color-primary-950: #0a0a0a;
 
-  /* Accent Colors - Vivid Blue */
+  /* Admin Colors - Orange (Maintained) */
+  --color-admin-50: #fff7ed;
+  --color-admin-100: #ffedd5;
+  --color-admin-200: #fed7aa;
+  --color-admin-300: #fdba74;
+  --color-admin-400: #fb923c;
+  --color-admin-500: #f97316;
+  --color-admin-600: #ea580c;
+  --color-admin-700: #c2410c;
+  --color-admin-800: #9a3412;
+  --color-admin-900: #7c2d12;
+
+  /* Secondary Colors - Orange (Maintained) */
+  --color-secondary-50: #fff7ed;
+  --color-secondary-100: #ffedd5;
+  --color-secondary-200: #fed7aa;
+  --color-secondary-300: #fdba74;
+  --color-secondary-400: #fb923c;
+  --color-secondary-500: #f97316;
+  --color-secondary-600: #ea580c;
+  --color-secondary-700: #c2410c;
+  --color-secondary-800: #9a3412;
+  --color-secondary-900: #7c2d12;
+
+  /* Accent Colors - Vivid Blue (Requested) */
   --color-accent-50: #eff6ff;
   --color-accent-100: #dbeafe;
   --color-accent-200: #bfdbfe;
@@ -55,7 +82,7 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
-  /* Border Radius */
+  /* Border Radius - Slightly more squared for technical feel */
   --radius-sm: 0.125rem;
   --radius-DEFAULT: 0.375rem;
   --radius-md: 0.5rem;
@@ -68,7 +95,9 @@
   --animate-spin: spin 1s linear infinite;
 }
 
-/* Root Variables & Dark Mode */
+/* 
+  Root Variables & Dark Mode 
+*/
 :root {
   --background: var(--color-background);
   --foreground: var(--color-foreground);
@@ -89,8 +118,8 @@
 /* Base Styles */
 @layer base {
   body {
-    @apply bg-[var(--background)] text-[var(--foreground)] antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    @apply bg-(--background) text-(--foreground) antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1; /* More technical font features */
   }
 
   html {
@@ -100,11 +129,6 @@
   ::selection {
     @apply bg-accent-200 text-accent-900;
   }
-
-  /* Gantt 영역은 제외 (독립 테마 사용) */
-  body:not(.gantt-area) {
-    @apply bg-[var(--background)] text-[var(--foreground)];
-  }
 }
 
 /* Component Styles */
@@ -112,6 +136,7 @@
   /* Card Component - Minimalist */
   .card {
     @apply bg-white dark:bg-primary-900 rounded-lg border border-primary-200 dark:border-primary-800 transition-all duration-200;
+    /* Removed default shadow for cleaner look, added hover effect */
   }
 
   .card-hover {
@@ -137,6 +162,10 @@
 
   .btn-accent {
     @apply bg-accent-600 text-white border-transparent hover:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-500;
+  }
+  
+  .btn-admin {
+    @apply bg-admin-500 text-white border-transparent hover:bg-admin-600 dark:bg-admin-600 dark:hover:bg-admin-500;
   }
 
   /* Loading Spinner */

@@ -1,7 +1,7 @@
 {
   "/api/mock/route": "app/api/mock/route.js",
+  "/page": "app/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/projects/[id]/page": "app/dashboard/projects/[id]/page.js",
-  "/gantt/[id]/page": "app/gantt/[id]/page.js",
-  "/page": "app/page.js"
+  "/gantt/[id]/page": "app/gantt/[id]/page.js"
 }

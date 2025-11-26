@@ -27,8 +27,8 @@ export default function GanttPage({ params }: GanttPageProps) {
   const router = useRouter();
 
   const [chart, setChart] = useState<{ name: string; project_id: string } | null>(null);
-  const [_tasks, setTasks] = useState<Task[]>([]);
-  const [_links, setLinks] = useState<GanttLink[]>([]);
+  const [, setTasks] = useState<Task[]>([]);
+  const [, setLinks] = useState<GanttLink[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 

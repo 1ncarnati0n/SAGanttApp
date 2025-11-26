@@ -16,21 +16,21 @@ import { initializeSampleData } from "@/lib/services/mockStorage";
 export default function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [useMock, setUseMock] = useState(false);
-
-  useEffect(() => {
-    // Check if using mock mode
-    const isMock =
+  const [useMock] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return (
       !process.env.NEXT_PUBLIC_SUPABASE_URL ||
       !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
-    setUseMock(isMock);
+      process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true"
+    );
+  });
 
-    // Initialize sample data on mount
-    if (isMock) {
+  useEffect(() => {
+    // Initialize sample data on mount if mock mode
+    if (useMock) {
       initializeSampleData();
     }
-  }, []);
+  }, [useMock]);
 
   const handleSuccess = () => {
     setRefreshKey((prev) => prev + 1);
